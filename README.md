@@ -4,6 +4,27 @@ ComfyUI custom nodes and production workflows for LTX 2.3 image-to-video lip syn
 
 This repository is designed to be placed inside `ComfyUI/custom_nodes/`.
 
+## What This Pack Does
+
+This pack extends LTX 2.3 with tools for longer-form audio-driven rendering.
+
+- Split long songs or dialogue into renderable chunks
+- Reuse one image or rotate storyboard images across the full track
+- Time image changes by duration or by waveform keyframes
+- Pair prompts to storyboard segments
+- Save and requeue segments automatically until the full sequence is finished
+
+If you want a quick starting point, begin with the storyboard or waveform workflows in the `workflows/` folder.
+
+## Quick Start
+
+1. Install this folder into `ComfyUI/custom_nodes/`.
+2. Restart ComfyUI.
+3. Run `install_ltx23_motion_models.bat` or place the required models manually.
+4. Open one of the shipped workflows from `workflows/`.
+5. Load your audio, source image, and optional storyboard images.
+6. Render a short test first, then run the full loop workflow.
+
 ## Included
 
 - Custom nodes for audio slicing, storyboard scheduling, waveform timing, prompt rotation, and render looping
@@ -51,6 +72,16 @@ The workflows use a separate Gemma text encoder. A log such as `no CLIP/text enc
 - `workflows/geekatplay_studio_ltx_2_3_first_last_simple_reimport.json`: simple first-frame and last-frame guide setup
 - `workflows/geekatplay_studio_ltx_2_3_first_last_motion_track_reimport.json`: motion-track plus first/last guide setup
 
+Workflow selection help is in `docs/workflow-guide.md`.
+
+## Recommended Starting Points
+
+- Use `geekatplay_studio_ltx_2_3_ia2v_audio_range_lipsync_reimport.json` for fast lip-sync testing on a short audio range.
+- Use `geekatplay_studio_ltx_2_3_ia2v_segmented_audio_reimport.json` when one image should drive a long full-song or long-dialogue render.
+- Use `geekatplay_studio_ltx_2_3_ia2v_storyboard_song_looper_reimport.json` when each image should run for a fixed duration.
+- Use `geekatplay_studio_ltx_2_3_ia2v_waveform_storyboard_song_looper_reimport.json` when image changes should align to musical beats or spoken timing.
+- Use the `per_image_prompts` variants when each storyboard image needs its own text prompt.
+
 ## Custom Nodes
 
 The main nodes added by this package are:
@@ -62,6 +93,24 @@ The main nodes added by this package are:
 - Audio range and segmented-audio helper nodes
 
 These nodes are built to work with the included workflows but can also be reused in custom ComfyUI graphs.
+
+## Runtime Notes
+
+- The workflows use a separate Gemma text encoder, so `no CLIP/text encoder weights in checkpoint` is expected.
+- Storyboard and waveform workflows require `ffmpeg` for final segment concatenation.
+- Waveform storyboard segments follow the actual interval between keyframes.
+- Final output length still depends on your LTX frame count and per-segment render settings.
+
+## Troubleshooting
+
+- If your workflow stops after one segment, verify that the loop node is enabled and that `ffmpeg` is available.
+- If prompts do not change with images, use a `per_image_prompts` workflow and confirm the prompt selector is connected to `current_segment`.
+- If the waveform editor loads but the song does not preview, verify that the selected audio file exists in ComfyUI input storage and that ComfyUI can read it.
+- If model loading warns about missing CLIP weights in the checkpoint, keep the separate Gemma text encoder in place. That warning is normal for this setup.
+
+## Release Notes
+
+Prepared release notes for the current public version are in `docs/release-notes-v1.0.0.md`.
 
 ## Notes
 
