@@ -25,6 +25,8 @@ If you want a quick starting point, begin with the storyboard or waveform workfl
 5. Load your audio, source image, and optional storyboard images.
 6. Render a short test first, then run the full loop workflow.
 
+For a setup checklist, see `docs/getting-started.md`.
+
 ## Included
 
 - Custom nodes for audio slicing, storyboard scheduling, waveform timing, prompt rotation, and render looping
@@ -74,6 +76,19 @@ The workflows use a separate Gemma text encoder. A log such as `no CLIP/text enc
 
 Workflow selection help is in `docs/workflow-guide.md`.
 
+## Workflow Matrix
+
+| Goal | Best Workflow | Use When |
+| --- | --- | --- |
+| Test a short section quickly | `geekatplay_studio_ltx_2_3_ia2v_audio_range_lipsync_reimport.json` | You want to validate lip sync, prompt, or image behavior on a short audio slice |
+| Render long audio with one visual | `geekatplay_studio_ltx_2_3_ia2v_segmented_audio_reimport.json` | One main image should carry the whole track |
+| Render long audio with stronger shot control | `geekatplay_studio_ltx_2_3_ia2v_segmented_audio_first_last_reimport.json` | You want both first-frame and last-frame guidance across segments |
+| Rotate images by fixed timing | `geekatplay_studio_ltx_2_3_ia2v_storyboard_song_looper_reimport.json` | Each storyboard image should hold for a fixed duration |
+| Rotate images and prompts together | `geekatplay_studio_ltx_2_3_ia2v_storyboard_song_looper_per_image_prompts_reimport.json` | Each image needs its own prompt |
+| Rotate images by beats or phrasing | `geekatplay_studio_ltx_2_3_ia2v_waveform_storyboard_song_looper_reimport.json` | Image changes should follow waveform timing |
+| Rotate images and prompts by waveform timing | `geekatplay_studio_ltx_2_3_ia2v_waveform_storyboard_song_looper_per_image_prompts_reimport.json` | You need both waveform timing and per-segment prompt changes |
+| Build silent motion-controlled shots | `geekatplay_studio_ltx_2_3_first_last_simple_reimport.json` or `geekatplay_studio_ltx_2_3_first_last_motion_track_reimport.json` | You are shaping motion without the segmented audio loop |
+
 ## Recommended Starting Points
 
 - Use `geekatplay_studio_ltx_2_3_ia2v_audio_range_lipsync_reimport.json` for fast lip-sync testing on a short audio range.
@@ -108,9 +123,21 @@ These nodes are built to work with the included workflows but can also be reused
 - If the waveform editor loads but the song does not preview, verify that the selected audio file exists in ComfyUI input storage and that ComfyUI can read it.
 - If model loading warns about missing CLIP weights in the checkpoint, keep the separate Gemma text encoder in place. That warning is normal for this setup.
 
+## More Docs
+
+- `docs/getting-started.md`
+- `docs/workflow-guide.md`
+- `docs/release-notes-v1.0.0.md`
+
 ## Release Notes
 
 Prepared release notes for the current public version are in `docs/release-notes-v1.0.0.md`.
+
+## GitHub Release Checklist
+
+- Use tag `v1.0.0` as the first public release target
+- Paste `docs/release-notes-v1.0.0.md` into the GitHub release body
+- Add screenshots or short GIF previews when they are available
 
 ## Notes
 
