@@ -13,6 +13,7 @@ import uuid
 import wave
 
 import folder_paths
+import nodes
 import server
 import torch
 from comfy.cli_args import args
@@ -188,11 +189,49 @@ class _ContainsAnyOptionalDict(dict):
 
 
 def _normalize_audio_tensor(audio):
-    waveform = audio["waveform"]
-    sample_rate = audio["sample_rate"]
-    if waveform.ndim == 2:
+    waveform = None
+    sample_rate = None
+
+    if isinstance(audio, dict):
+        waveform = audio.get("waveform")
+        sample_rate = audio.get("sample_rate")
+    elif hasattr(audio, "get"):
+        try:
+            waveform = audio.get("waveform")
+            sample_rate = audio.get("sample_rate")
+        except Exception:
+            waveform = None
+            sample_rate = None
+
+    if waveform is None and hasattr(audio, "waveform"):
+        waveform = getattr(audio, "waveform")
+        sample_rate = getattr(audio, "sample_rate", sample_rate)
+
+    if waveform is None and isinstance(audio, (tuple, list)) and audio:
+        waveform = audio[0]
+        if len(audio) > 1:
+            sample_rate = audio[1]
+
+    if waveform is None and torch.is_tensor(audio):
+        waveform = audio
+
+    if waveform is None:
+        raise ValueError(f"Unsupported audio input type: {type(audio).__name__}")
+
+    if not torch.is_tensor(waveform):
+        waveform = torch.as_tensor(waveform)
+
+    if waveform.ndim == 1:
+        waveform = waveform.unsqueeze(0).unsqueeze(0)
+    elif waveform.ndim == 2:
         waveform = waveform.unsqueeze(0)
-    return waveform, sample_rate
+    elif waveform.ndim > 3:
+        waveform = waveform.reshape(1, -1, waveform.shape[-1])
+
+    if not sample_rate:
+        sample_rate = 48000
+
+    return waveform, int(sample_rate)
 
 
 def _slice_audio(audio, start_frame, end_frame):
@@ -502,8 +541,15 @@ if _prompt_server_instance is not None:
 
 
 def _get_current_queue_item():
-    prompt_queue = server.PromptServer.instance.prompt_queue
-    current = next(iter(prompt_queue.currently_running.values()))
+    prompt_server = getattr(server.PromptServer, "instance", None)
+    if prompt_server is None or getattr(prompt_server, "prompt_queue", None) is None:
+        raise RuntimeError("PromptServer prompt queue is unavailable")
+
+    currently_running = getattr(prompt_server.prompt_queue, "currently_running", {})
+    if not currently_running:
+        raise RuntimeError("No currently running prompt was found")
+
+    current = next(iter(currently_running.values()))
 
     if len(current) == 6:
         (_, _, prompt, extra_data, outputs_to_execute, sensitive) = current
@@ -523,6 +569,17 @@ def _normalize_prompt_keys(prompt):
     if prompt is None:
         return None
     return {str(key): value for key, value in prompt.items()}
+
+
+def _infer_output_nodes(prompt):
+    normalized_prompt = _normalize_prompt_keys(prompt) or {}
+    outputs = []
+    for node_id, node in normalized_prompt.items():
+        class_type = node.get("class_type")
+        class_def = nodes.NODE_CLASS_MAPPINGS.get(class_type)
+        if class_def is not None and getattr(class_def, "OUTPUT_NODE", False):
+            outputs.append(str(node_id))
+    return outputs
 
 
 def _prompt_node_snapshot(prompt, node_id):
@@ -549,14 +606,37 @@ def _log_prompt_cycle_excerpt(prefix, prompt):
     logging.info("%s prompt excerpt: %s", prefix, excerpt)
 
 
-def _enqueue_prompt(prompt):
-    prompt_queue = server.PromptServer.instance.prompt_queue
-    _, extra_data, outputs_to_execute, sensitive = _get_current_queue_item()
-    prompt = _normalize_prompt_keys(prompt)
-    outputs_to_execute = _normalize_outputs_to_execute(outputs_to_execute)
+def _enqueue_prompt(prompt, extra_data=None, outputs_to_execute=None, sensitive=None):
+    prompt_server = getattr(server.PromptServer, "instance", None)
+    if prompt_server is None or getattr(prompt_server, "prompt_queue", None) is None:
+        raise RuntimeError("PromptServer prompt queue is unavailable")
 
-    number = -server.PromptServer.instance.number
-    server.PromptServer.instance.number += 1
+    prompt_queue = prompt_server.prompt_queue
+    prompt = _normalize_prompt_keys(prompt)
+
+    try:
+        _, current_extra_data, current_outputs_to_execute, current_sensitive = _get_current_queue_item()
+    except Exception as exc:
+        logging.warning("[LTX Motion] Falling back to inferred prompt queue metadata: %s", exc)
+        current_extra_data = None
+        current_outputs_to_execute = None
+        current_sensitive = None
+
+    if extra_data is None:
+        extra_data = current_extra_data if current_extra_data is not None else {}
+    if sensitive is None:
+        sensitive = current_sensitive if current_sensitive is not None else {}
+    if outputs_to_execute is None:
+        outputs_to_execute = current_outputs_to_execute
+
+    outputs_to_execute = _normalize_outputs_to_execute(outputs_to_execute)
+    if outputs_to_execute is None:
+        outputs_to_execute = _infer_output_nodes(prompt)
+    if not outputs_to_execute:
+        raise RuntimeError("No output nodes were found for the requeued prompt")
+
+    number = -prompt_server.number
+    prompt_server.number += 1
     prompt_id = str(server.uuid.uuid4())
     logging.info("[LTX Motion] Queueing next segment prompt %s with outputs %s", prompt_id, outputs_to_execute)
     prompt_queue.put((number, prompt_id, prompt, extra_data, outputs_to_execute, sensitive))
