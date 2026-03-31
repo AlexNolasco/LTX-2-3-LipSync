@@ -205,6 +205,17 @@ def _slice_audio(audio, start_frame, end_frame):
     }
 
 
+def _build_silent_audio(duration_seconds, sample_rate=48000):
+    safe_sample_rate = max(1, int(sample_rate))
+    safe_duration_seconds = max(1.0 / safe_sample_rate, float(duration_seconds))
+    frame_count = max(1, int(math.ceil(safe_duration_seconds * safe_sample_rate)))
+    waveform = torch.zeros((1, 1, frame_count), dtype=torch.float32)
+    return {
+        "waveform": waveform,
+        "sample_rate": safe_sample_rate,
+    }
+
+
 def _resolve_audio_path(audio_file):
     audio_file = _strip_path(audio_file)
     if not audio_file:
@@ -363,7 +374,7 @@ def _read_waveform_peaks(audio_file, bins=1200):
     }
 
 
-def _select_storyboard_segment(audio, items, durations, start_time="", end_time="", segment_index=0):
+def _select_storyboard_segment(audio, items, durations, start_time="", end_time="", segment_index=0, stop_at_storyboard_end=False):
     if not items:
         raise ValueError("At least one storyboard image is required")
 
@@ -392,27 +403,32 @@ def _select_storyboard_segment(audio, items, durations, start_time="", end_time=
     segments = []
     cursor = window_start_frame
     slot_index = 0
-    last_duration = scheduled_durations[-1]
-    last_item = scheduled_items[-1]
     while cursor < window_end_frame:
-        active_slot = min(slot_index, len(scheduled_items) - 1)
-        active_item = scheduled_items[active_slot] if slot_index < len(scheduled_items) else last_item
-        active_duration = scheduled_durations[active_slot] if slot_index < len(scheduled_items) else last_duration
+        if stop_at_storyboard_end and slot_index >= len(scheduled_items):
+            break
+
+        active_slot = slot_index % len(scheduled_items)
+        active_item = scheduled_items[active_slot]
+        active_duration = scheduled_durations[active_slot]
         segment_frames = max(1, int(round(active_duration * sample_rate)))
         next_cursor = min(window_end_frame, cursor + segment_frames)
-        segments.append((cursor, next_cursor, active_item, active_duration, active_slot + 1, slot_index >= len(scheduled_items)))
+        cycle_index = (slot_index // len(scheduled_items)) + 1
+        wrapped = slot_index >= len(scheduled_items)
+        segments.append((cursor, next_cursor, active_item, active_duration, active_slot + 1, cycle_index, wrapped))
         if next_cursor <= cursor:
             break
         cursor = next_cursor
         slot_index += 1
 
+    stop_reason = "storyboard_end" if stop_at_storyboard_end and cursor < window_end_frame and slot_index >= len(scheduled_items) else "audio_window_end"
     total_segments = max(1, len(segments))
     current_segment = min(max(int(segment_index), 0), total_segments - 1)
-    segment_start, segment_end, selected_item, _scheduled_duration, selected_slot, reused_last = segments[current_segment]
+    segment_start, segment_end, selected_item, _scheduled_duration, selected_slot, cycle_index, wrapped = segments[current_segment]
     selected_audio = _slice_audio(audio, segment_start, segment_end)
     segment_duration_seconds = (segment_end - segment_start) / sample_rate
     debug_text = (
-        f"segment={current_segment + 1}/{total_segments} | slot={selected_slot} | reused_last={reused_last} | "
+        f"segment={current_segment + 1}/{total_segments} | slot={selected_slot}/{len(scheduled_items)} | cycle={cycle_index} | wrapped={wrapped} | "
+        f"stop_mode={'storyboard' if stop_at_storyboard_end else 'audio'} | stop_reason={stop_reason} | "
         f"window={window_start_seconds:.3f}s->{window_end_seconds:.3f}s | "
         f"segment={segment_start / sample_rate:.3f}s->{segment_end / sample_rate:.3f}s | "
         f"duration={segment_duration_seconds:.3f}s | image_count={len(scheduled_items)}"
@@ -723,16 +739,24 @@ def _sanitize_video_audio(video):
     if not audio:
         return video
 
+    sanitized_audio, invalid_samples = _sanitize_audio_dict(audio)
+    if invalid_samples == 0:
+        return video
+
+    components.audio = sanitized_audio
+    logging.warning("[LTX Motion] Sanitized %s invalid audio samples before video save", invalid_samples)
+    return VideoFromComponents(components)
+
+
+def _sanitize_audio_dict(audio):
     waveform = audio.get("waveform") if isinstance(audio, dict) else None
     if waveform is None or torch.isfinite(waveform).all():
-        return video
+        return audio, 0
 
     invalid_samples = int((~torch.isfinite(waveform)).sum().item())
     sanitized_audio = dict(audio)
     sanitized_audio["waveform"] = torch.nan_to_num(waveform, nan=0.0, posinf=0.0, neginf=0.0)
-    components.audio = sanitized_audio
-    logging.warning("[LTX Motion] Sanitized %s invalid audio samples before video save", invalid_samples)
-    return VideoFromComponents(components)
+    return sanitized_audio, invalid_samples
 
 
 def _sanitize_video_images(video):
@@ -929,9 +953,13 @@ class LTXMotionAudioRangeExtractor:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "audio": ("AUDIO",),
                 "start_time": ("STRING", {"default": "1:10", "multiline": False}),
                 "end_time": ("STRING", {"default": "1:20", "multiline": False}),
+                "use_loaded_audio": ("BOOLEAN", {"default": True}),
+                "silent_sample_rate": ("INT", {"default": 48000, "min": 1000, "max": 192000, "step": 1000}),
+            },
+            "optional": {
+                "audio": ("AUDIO",),
             },
         }
 
@@ -941,18 +969,32 @@ class LTXMotionAudioRangeExtractor:
     CATEGORY = "LTX Motion/audio"
 
     @classmethod
-    def VALIDATE_INPUTS(cls, audio=None, start_time="1:10", end_time="1:20", input_types=None, **kwargs):
+    def VALIDATE_INPUTS(
+        cls,
+        audio=None,
+        start_time="1:10",
+        end_time="1:20",
+        use_loaded_audio=True,
+        silent_sample_rate=48000,
+        input_types=None,
+        **kwargs,
+    ):
         try:
             start_seconds = _parse_timecode(start_time)
             end_seconds = _parse_timecode(end_time)
             if end_seconds <= start_seconds:
                 return "end_time must be greater than start_time"
+            if int(silent_sample_rate) <= 0:
+                return "silent_sample_rate must be greater than 0"
             logging.info(
-                "[LTX Motion][validate] Audio range extractor: start=%s(%.3fs) end=%s(%.3fs) input_types=%s kwargs=%s",
+                "[LTX Motion][validate] Audio range extractor: start=%s(%.3fs) end=%s(%.3fs) use_loaded_audio=%s silent_sample_rate=%s has_audio=%s input_types=%s kwargs=%s",
                 start_time,
                 start_seconds,
                 end_time,
                 end_seconds,
+                use_loaded_audio,
+                silent_sample_rate,
+                audio is not None,
                 input_types,
                 sorted(kwargs.keys()),
             )
@@ -960,7 +1002,32 @@ class LTXMotionAudioRangeExtractor:
             return str(exc)
         return True
 
-    def extract_range(self, audio, start_time, end_time):
+    def extract_range(self, start_time, end_time, use_loaded_audio=True, silent_sample_rate=48000, audio=None):
+        start_seconds = _parse_timecode(start_time)
+        end_seconds = _parse_timecode(end_time)
+        if end_seconds <= start_seconds:
+            raise ValueError("end_time must be greater than start_time")
+
+        if not bool(use_loaded_audio):
+            duration_seconds = end_seconds - start_seconds
+            audio_segment = _build_silent_audio(duration_seconds, sample_rate=silent_sample_rate)
+            debug_text = (
+                f"mode=silent | start={start_time} ({start_seconds:.3f}s) | "
+                f"end={end_time} ({end_seconds:.3f}s) | "
+                f"duration={duration_seconds:.3f}s | sample_rate={int(silent_sample_rate)}"
+            )
+            logging.info(
+                "[LTX Motion] Built silent audio range %s -> %s duration=%.3fs sample_rate=%s",
+                start_time,
+                end_time,
+                duration_seconds,
+                silent_sample_rate,
+            )
+            return (audio_segment, float(duration_seconds), debug_text)
+
+        if audio is None:
+            raise ValueError("Audio input is required when use_loaded_audio is enabled")
+
         waveform = audio["waveform"]
         sample_rate = audio["sample_rate"]
         if waveform.ndim == 2:
@@ -971,11 +1038,6 @@ class LTXMotionAudioRangeExtractor:
 
         total_frames = waveform.shape[-1]
         total_duration = total_frames / sample_rate
-
-        start_seconds = _parse_timecode(start_time)
-        end_seconds = _parse_timecode(end_time)
-        if end_seconds <= start_seconds:
-            raise ValueError("end_time must be greater than start_time")
 
         start_frame = min(total_frames, max(0, int(math.floor(start_seconds * sample_rate))))
         end_frame = min(total_frames, max(start_frame + 1, int(math.ceil(end_seconds * sample_rate))))
@@ -990,7 +1052,7 @@ class LTXMotionAudioRangeExtractor:
         }
         duration_seconds = (end_frame - start_frame) / sample_rate
         debug_text = (
-            f"start={start_time} ({start_seconds:.3f}s) | "
+            f"mode=audio | start={start_time} ({start_seconds:.3f}s) | "
             f"end={end_time} ({end_seconds:.3f}s) | "
             f"duration={duration_seconds:.3f}s | "
             f"samples={start_frame}:{end_frame} | "
@@ -1006,6 +1068,29 @@ class LTXMotionAudioRangeExtractor:
             total_duration,
         )
         return (audio_segment, float(duration_seconds), debug_text)
+
+
+def _build_storyboard_schedule(image_1, image_values, image_count):
+    requested_image_count = min(max(int(image_count), 1), MAX_STORYBOARD_SLOTS)
+    scheduled_images = []
+    last_image = image_1
+    for index in range(1, requested_image_count + 1):
+        image_value = image_values.get(index)
+        if image_value is not None:
+            last_image = image_value
+        scheduled_images.append(last_image)
+    connected_image_indexes = sorted(index for index, value in image_values.items() if value is not None)
+    return scheduled_images, connected_image_indexes
+
+
+def _build_storyboard_pair_schedule(scheduled_images, wrap_to_start=False):
+    if not scheduled_images:
+        raise ValueError("At least one storyboard image is required")
+    if len(scheduled_images) == 1:
+        return [scheduled_images[0]], [scheduled_images[0]]
+    if wrap_to_start:
+        return list(scheduled_images), list(scheduled_images[1:]) + [scheduled_images[0]]
+    return scheduled_images[:-1], scheduled_images[1:]
 
 
 class LTXMotionStoryboardSegmentSelector:
@@ -1026,6 +1111,7 @@ class LTXMotionStoryboardSegmentSelector:
         optional = {
             "segment_index": ("INT", {"default": 0, "min": 0, "max": 1000000, "step": 1}),
             "render_id": ("STRING", {"default": ""}),
+            "stop_at_storyboard_end": ("BOOLEAN", {"default": False}),
         }
         for index in range(2, MAX_STORYBOARD_SLOTS + 1):
             optional[f"image_{index}"] = ("IMAGE",)
@@ -1114,6 +1200,7 @@ class LTXMotionStoryboardSegmentSelector:
         duration_32=10.0,
         segment_index=0,
         render_id="",
+        stop_at_storyboard_end=False,
         image_2=None,
         image_3=None,
         image_4=None,
@@ -1174,17 +1261,10 @@ class LTXMotionStoryboardSegmentSelector:
         }
         image_values.update(_extract_indexed_kwargs(kwargs, "image_"))
 
-        connected_image_indexes = sorted(index for index, value in image_values.items() if value is not None)
         image_count = requested_image_count
         csv_durations = _parse_duration_list(durations_csv)
 
-        scheduled_images = []
-        last_image = image_1
-        for index in range(1, image_count + 1):
-            image_value = image_values.get(index)
-            if image_value is not None:
-                last_image = image_value
-            scheduled_images.append(last_image)
+        scheduled_images, connected_image_indexes = _build_storyboard_schedule(image_1, image_values, image_count)
 
         scheduled_durations = []
         for index in range(1, image_count + 1):
@@ -1202,12 +1282,227 @@ class LTXMotionStoryboardSegmentSelector:
             start_time=start_time,
             end_time=end_time,
             segment_index=active_segment_index,
+            stop_at_storyboard_end=bool(stop_at_storyboard_end),
         )
         debug_text = f"{debug_text} | dynamic_images={connected_image_indexes} | render_id={render_id or 'fresh'}"
         logging.info("[LTX Motion] Storyboard selector %s", debug_text)
         return (
             selected_audio,
             selected_image,
+            current_segment,
+            total_segments,
+            float(segment_duration_seconds),
+            debug_text,
+        )
+
+
+class LTXMotionStoryboardPairSelector:
+    @classmethod
+    def INPUT_TYPES(cls):
+        required = {
+            "audio": ("AUDIO",),
+            "image_1": ("IMAGE",),
+            "image_count": ("INT", {"default": 2, "min": 2, "max": MAX_STORYBOARD_SLOTS, "step": 1}),
+            "start_time": ("STRING", {"default": "", "multiline": False}),
+            "end_time": ("STRING", {"default": "", "multiline": False}),
+            "durations_csv": ("STRING", {"default": "", "multiline": False}),
+        }
+        for index in range(1, MAX_STORYBOARD_SLOTS + 1):
+            default_duration = 5.0 if index == 1 else 10.0
+            required[f"duration_{index}"] = ("FLOAT", {"default": default_duration, "min": 0.1, "max": 600.0, "step": 0.1})
+
+        optional = {
+            "segment_index": ("INT", {"default": 0, "min": 0, "max": 1000000, "step": 1}),
+            "render_id": ("STRING", {"default": ""}),
+            "stop_at_storyboard_end": ("BOOLEAN", {"default": False}),
+        }
+        for index in range(2, MAX_STORYBOARD_SLOTS + 1):
+            optional[f"image_{index}"] = ("IMAGE",)
+
+        return {
+            "required": required,
+            "optional": optional,
+        }
+
+    RETURN_TYPES = ("AUDIO", "IMAGE", "IMAGE", "INT", "INT", "FLOAT", "STRING")
+    RETURN_NAMES = ("audio", "start_image", "end_image", "current_segment", "total_segments", "segment_duration_seconds", "debug_text")
+    FUNCTION = "select_segment"
+    CATEGORY = "LTX Motion/audio"
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, image_count=2, start_time="", end_time="", durations_csv="", render_id="", input_types=None, **kwargs):
+        try:
+            image_count = min(max(int(image_count), 2), MAX_STORYBOARD_SLOTS)
+            start_seconds = _parse_optional_timecode(start_time, 0.0)
+            end_text = "" if end_time is None else str(end_time).strip()
+            end_seconds = None if not end_text else _parse_timecode(end_text)
+            if end_seconds is not None and end_seconds <= start_seconds:
+                return "end_time must be greater than start_time"
+            csv_durations = _parse_duration_list(durations_csv)
+            pair_count = max(1, image_count - 1)
+            duration_limit = max(pair_count, MAX_STORYBOARD_SLOTS if not csv_durations else len(csv_durations))
+            for index in range(1, duration_limit + 1):
+                if csv_durations:
+                    duration = csv_durations[min(index - 1, len(csv_durations) - 1)]
+                else:
+                    fallback_index = min(index, MAX_STORYBOARD_SLOTS)
+                    duration = float(kwargs.get(f"duration_{fallback_index}", 0.0))
+                if duration <= 0.0:
+                    return f"duration_{index} must be greater than 0"
+            logging.info(
+                "[LTX Motion][validate] Storyboard pair selector: image_count=%s start=%s end=%s dynamic_images=%s durations_csv_present=%s input_types=%s",
+                image_count,
+                start_time,
+                end_time,
+                sorted(_extract_indexed_kwargs(kwargs, "image_")),
+                bool(csv_durations),
+                input_types,
+            )
+        except Exception as exc:
+            return str(exc)
+        return True
+
+    def select_segment(
+        self,
+        audio,
+        image_1,
+        image_count,
+        start_time="",
+        end_time="",
+        durations_csv="",
+        duration_1=5.0,
+        duration_2=10.0,
+        duration_3=10.0,
+        duration_4=10.0,
+        duration_5=10.0,
+        duration_6=10.0,
+        duration_7=10.0,
+        duration_8=10.0,
+        duration_9=10.0,
+        duration_10=10.0,
+        duration_11=10.0,
+        duration_12=10.0,
+        duration_13=10.0,
+        duration_14=10.0,
+        duration_15=10.0,
+        duration_16=10.0,
+        duration_17=10.0,
+        duration_18=10.0,
+        duration_19=10.0,
+        duration_20=10.0,
+        duration_21=10.0,
+        duration_22=10.0,
+        duration_23=10.0,
+        duration_24=10.0,
+        duration_25=10.0,
+        duration_26=10.0,
+        duration_27=10.0,
+        duration_28=10.0,
+        duration_29=10.0,
+        duration_30=10.0,
+        duration_31=10.0,
+        duration_32=10.0,
+        segment_index=0,
+        render_id="",
+        stop_at_storyboard_end=False,
+        image_2=None,
+        image_3=None,
+        image_4=None,
+        image_5=None,
+        image_6=None,
+        image_7=None,
+        image_8=None,
+        image_9=None,
+        image_10=None,
+        **kwargs,
+    ):
+        requested_image_count = min(max(int(image_count), 2), MAX_STORYBOARD_SLOTS)
+        durations = [
+            float(duration_1),
+            float(duration_2),
+            float(duration_3),
+            float(duration_4),
+            float(duration_5),
+            float(duration_6),
+            float(duration_7),
+            float(duration_8),
+            float(duration_9),
+            float(duration_10),
+            float(duration_11),
+            float(duration_12),
+            float(duration_13),
+            float(duration_14),
+            float(duration_15),
+            float(duration_16),
+            float(duration_17),
+            float(duration_18),
+            float(duration_19),
+            float(duration_20),
+            float(duration_21),
+            float(duration_22),
+            float(duration_23),
+            float(duration_24),
+            float(duration_25),
+            float(duration_26),
+            float(duration_27),
+            float(duration_28),
+            float(duration_29),
+            float(duration_30),
+            float(duration_31),
+            float(duration_32),
+        ]
+        image_values = {
+            1: image_1,
+            2: image_2,
+            3: image_3,
+            4: image_4,
+            5: image_5,
+            6: image_6,
+            7: image_7,
+            8: image_8,
+            9: image_9,
+            10: image_10,
+        }
+        image_values.update(_extract_indexed_kwargs(kwargs, "image_"))
+
+        csv_durations = _parse_duration_list(durations_csv)
+        scheduled_images, connected_image_indexes = _build_storyboard_schedule(image_1, image_values, requested_image_count)
+        scheduled_start_images, scheduled_end_images = _build_storyboard_pair_schedule(
+            scheduled_images,
+            wrap_to_start=not bool(stop_at_storyboard_end),
+        )
+
+        pair_count = max(1, len(scheduled_start_images))
+        scheduled_durations = []
+        for index in range(1, pair_count + 1):
+            if csv_durations:
+                duration_value = csv_durations[min(index - 1, len(csv_durations) - 1)]
+            else:
+                duration_value = durations[min(index - 1, len(durations) - 1)]
+            duration_value = max(0.1, float(duration_value))
+            scheduled_durations.append(duration_value)
+
+        active_segment_index = int(segment_index) if str(render_id or "").strip() else 0
+        selected_audio, selected_start_image, current_segment, total_segments, segment_duration_seconds, debug_text = _select_storyboard_segment(
+            audio,
+            scheduled_start_images,
+            scheduled_durations,
+            start_time=start_time,
+            end_time=end_time,
+            segment_index=active_segment_index,
+            stop_at_storyboard_end=bool(stop_at_storyboard_end),
+        )
+        selected_pair_index = current_segment % max(1, len(scheduled_end_images))
+        selected_end_image = scheduled_end_images[selected_pair_index]
+        debug_text = (
+            f"{debug_text} | pair_mode={'loop' if not bool(stop_at_storyboard_end) else 'next'} | pair_count={pair_count} | "
+            f"dynamic_images={connected_image_indexes} | render_id={render_id or 'fresh'}"
+        )
+        logging.info("[LTX Motion] Storyboard pair selector %s", debug_text)
+        return (
+            selected_audio,
+            selected_start_image,
+            selected_end_image,
             current_segment,
             total_segments,
             float(segment_duration_seconds),
@@ -1235,6 +1530,7 @@ class LTXMotionStoryboardSegmentPromptSelector:
         optional = {
             "segment_index": ("INT", {"default": 0, "min": 0, "max": 1000000, "step": 1}),
             "render_id": ("STRING", {"default": ""}),
+            "stop_at_storyboard_end": ("BOOLEAN", {"default": False}),
         }
         for index in range(2, MAX_STORYBOARD_SLOTS + 1):
             optional[f"image_{index}"] = ("IMAGE",)
@@ -1355,6 +1651,7 @@ class LTXMotionStoryboardSegmentPromptSelector:
         prompt_32="",
         segment_index=0,
         render_id="",
+        stop_at_storyboard_end=False,
         image_2=None,
         image_3=None,
         image_4=None,
@@ -1431,6 +1728,7 @@ class LTXMotionStoryboardSegmentPromptSelector:
             start_time=start_time,
             end_time=end_time,
             segment_index=active_segment_index,
+            stop_at_storyboard_end=bool(stop_at_storyboard_end),
         )
         selected_prompt = scheduled_prompts[min(current_segment, len(scheduled_prompts) - 1)] if scheduled_prompts else ""
         debug_text = f"{debug_text} | dynamic_images={connected_image_indexes} | prompt_chars={len(str(selected_prompt).strip())} | render_id={render_id or 'fresh'}"
@@ -1537,14 +1835,7 @@ class LTXMotionWaveformStoryboardSelector:
         segment_count = min(max(len(keyframes), 1), MAX_STORYBOARD_SLOTS)
         keyframes = keyframes[:segment_count]
 
-        scheduled_images = []
-        last_image = image_1
-        connected_image_indexes = sorted(index for index, value in image_values.items() if value is not None)
-        for index in range(1, segment_count + 1):
-            image_value = image_values.get(index)
-            if image_value is not None:
-                last_image = image_value
-            scheduled_images.append(last_image)
+        scheduled_images, connected_image_indexes = _build_storyboard_schedule(image_1, image_values, segment_count)
 
         active_segment_index = int(segment_index) if str(render_id or "").strip() else 0
         selected_audio, selected_image, current_segment, total_segments, segment_duration_seconds, debug_text = _select_keyframed_storyboard_segment(
@@ -1561,6 +1852,129 @@ class LTXMotionWaveformStoryboardSelector:
         return (
             selected_audio,
             selected_image,
+            current_segment,
+            total_segments,
+            float(segment_duration_seconds),
+            debug_text,
+        )
+
+
+class LTXMotionWaveformStoryboardPairSelector:
+    @classmethod
+    def INPUT_TYPES(cls):
+        audio_files = _list_input_audio_files()
+        if not audio_files:
+            audio_files = [""]
+
+        required = {
+            "audio": ("AUDIO",),
+            "image_1": ("IMAGE",),
+            "audio_file": (audio_files, {"default": audio_files[0]}),
+            "image_count": ("INT", {"default": 2, "min": 2, "max": MAX_STORYBOARD_SLOTS, "step": 1}),
+            "keyframes_json": ("STRING", {"default": "[0.0]", "multiline": False}),
+        }
+        optional = {
+            "segment_index": ("INT", {"default": 0, "min": 0, "max": 1000000, "step": 1}),
+            "render_id": ("STRING", {"default": ""}),
+        }
+        for index in range(2, MAX_STORYBOARD_SLOTS + 1):
+            optional[f"image_{index}"] = ("IMAGE",)
+
+        return {
+            "required": required,
+            "optional": optional,
+        }
+
+    RETURN_TYPES = ("AUDIO", "IMAGE", "IMAGE", "INT", "INT", "FLOAT", "STRING")
+    RETURN_NAMES = ("audio", "start_image", "end_image", "current_segment", "total_segments", "segment_duration_seconds", "debug_text")
+    FUNCTION = "select_segment"
+    CATEGORY = "LTX Motion/audio"
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, audio_file="", image_count=2, keyframes_json="[0.0]", render_id="", input_types=None, **kwargs):
+        try:
+            if audio_file:
+                _resolve_audio_path(audio_file)
+            image_count = min(max(int(image_count), 2), MAX_STORYBOARD_SLOTS)
+            normalized_keyframes = _normalize_keyframe_list(_parse_keyframe_list(keyframes_json))
+            if len(normalized_keyframes) + 1 > MAX_STORYBOARD_SLOTS:
+                return f"Too many keyframes: {len(normalized_keyframes)} requires more than {MAX_STORYBOARD_SLOTS} storyboard images"
+            logging.info(
+                "[LTX Motion][validate] Waveform storyboard pair selector: audio_file=%s image_count=%s keyframes=%s input_types=%s",
+                audio_file,
+                image_count,
+                normalized_keyframes,
+                input_types,
+            )
+        except Exception as exc:
+            return str(exc)
+        return True
+
+    def select_segment(
+        self,
+        audio,
+        image_1,
+        audio_file="",
+        image_count=2,
+        keyframes_json="[0.0]",
+        segment_index=0,
+        render_id="",
+        image_2=None,
+        image_3=None,
+        image_4=None,
+        image_5=None,
+        image_6=None,
+        image_7=None,
+        image_8=None,
+        image_9=None,
+        image_10=None,
+        **kwargs,
+    ):
+        image_values = {
+            1: image_1,
+            2: image_2,
+            3: image_3,
+            4: image_4,
+            5: image_5,
+            6: image_6,
+            7: image_7,
+            8: image_8,
+            9: image_9,
+            10: image_10,
+        }
+        image_values.update(_extract_indexed_kwargs(kwargs, "image_"))
+
+        waveform, sample_rate = _normalize_audio_tensor(audio)
+        total_duration = waveform.shape[-1] / sample_rate if sample_rate else 0.0
+        keyframes = _normalize_keyframe_list(_parse_keyframe_list(keyframes_json), total_duration=total_duration)
+        requested_image_count = min(max(int(image_count), 2), MAX_STORYBOARD_SLOTS)
+        segment_count = min(max(len(keyframes), 1), MAX_STORYBOARD_SLOTS - 1)
+        keyframes = keyframes[:segment_count]
+
+        scheduled_images, connected_image_indexes = _build_storyboard_schedule(
+            image_1,
+            image_values,
+            min(MAX_STORYBOARD_SLOTS, max(requested_image_count, segment_count + 1)),
+        )
+        scheduled_start_images, scheduled_end_images = _build_storyboard_pair_schedule(scheduled_images)
+
+        active_segment_index = int(segment_index) if str(render_id or "").strip() else 0
+        selected_audio, selected_start_image, current_segment, total_segments, segment_duration_seconds, debug_text = _select_keyframed_storyboard_segment(
+            audio,
+            scheduled_start_images,
+            keyframes,
+            segment_index=active_segment_index,
+        )
+        selected_end_image = scheduled_end_images[min(current_segment, len(scheduled_end_images) - 1)]
+        debug_text = (
+            f"{debug_text} | pair_mode=next | dynamic_images={connected_image_indexes} | "
+            f"requested_image_count={requested_image_count} | audio_file={audio_file} | render_id={render_id or 'fresh'}"
+        )
+        logging.info("[LTX Motion] Waveform storyboard pair selector %s", debug_text)
+        return (
+            selected_audio,
+            selected_start_image,
+            selected_end_image,
             current_segment,
             total_segments,
             float(segment_duration_seconds),
@@ -1918,7 +2332,13 @@ class LTXMotionAudioSegmentLoop:
         loader_updated = False
         loop_updated = False
         for node_id, node in prompt_copy.items():
-            if node.get("class_type") in {"LTXMotionSegmentedAudioLoader", "LTXMotionStoryboardSegmentSelector", "LTXMotionWaveformStoryboardSelector"}:
+            if node.get("class_type") in {
+                "LTXMotionSegmentedAudioLoader",
+                "LTXMotionStoryboardSegmentSelector",
+                "LTXMotionStoryboardPairSelector",
+                "LTXMotionWaveformStoryboardSelector",
+                "LTXMotionWaveformStoryboardPairSelector",
+            }:
                 node.setdefault("inputs", {})["segment_index"] = next_segment
                 node.setdefault("inputs", {})["render_id"] = active_render_id
                 loader_updated = True
@@ -1966,30 +2386,57 @@ class LTXMotionSaveVideo:
         return {"ui": {"text": [f"Saved final video: {output_name}"]}}
 
 
+class LTXMotionSanitizeAudio:
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "audio": ("AUDIO",),
+            }
+        }
+
+    RETURN_TYPES = ("AUDIO",)
+    RETURN_NAMES = ("audio",)
+    FUNCTION = "sanitize_audio"
+    CATEGORY = "LTX Motion/workflow"
+
+    def sanitize_audio(self, audio):
+        sanitized_audio, invalid_samples = _sanitize_audio_dict(audio)
+        if invalid_samples:
+            logging.warning("[LTX Motion] Sanitized %s invalid audio samples before CreateVideo", invalid_samples)
+        return (sanitized_audio,)
+
+
 NODE_CLASS_MAPPINGS = {
     "LTXMotionSegmentedAudioLoader": LTXMotionSegmentedAudioLoader,
     "LTXMotionAudioRangeExtractor": LTXMotionAudioRangeExtractor,
     "LTXMotionStoryboardSegmentSelector": LTXMotionStoryboardSegmentSelector,
+    "LTXMotionStoryboardPairSelector": LTXMotionStoryboardPairSelector,
     "LTXMotionStoryboardSegmentPromptSelector": LTXMotionStoryboardSegmentPromptSelector,
     "LTXMotionWaveformStoryboardSelector": LTXMotionWaveformStoryboardSelector,
+    "LTXMotionWaveformStoryboardPairSelector": LTXMotionWaveformStoryboardPairSelector,
     "LTXMotionStoryboardPromptSelector": LTXMotionStoryboardPromptSelector,
     "LTXMotionStoryboardFileListSelector": LTXMotionStoryboardFileListSelector,
     "LTXMotionDebugImageStats": LTXMotionDebugImageStats,
     "LTXMotionDebugLatentStats": LTXMotionDebugLatentStats,
     "LTXMotionAudioSegmentLoop": LTXMotionAudioSegmentLoop,
     "LTXMotionSaveVideo": LTXMotionSaveVideo,
+    "LTXMotionSanitizeAudio": LTXMotionSanitizeAudio,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "LTXMotionSegmentedAudioLoader": "LTX Motion Segmented Audio Loader",
     "LTXMotionAudioRangeExtractor": "LTX Motion Audio Range Extractor",
     "LTXMotionStoryboardSegmentSelector": "LTX Motion Storyboard Segment Selector",
+    "LTXMotionStoryboardPairSelector": "LTX Motion Storyboard Pair Selector",
     "LTXMotionStoryboardSegmentPromptSelector": "LTX Motion Storyboard Segment Prompt Selector",
     "LTXMotionWaveformStoryboardSelector": "LTX Motion Waveform Storyboard Selector",
+    "LTXMotionWaveformStoryboardPairSelector": "LTX Motion Waveform Storyboard Pair Selector",
     "LTXMotionStoryboardPromptSelector": "LTX Motion Storyboard Prompt Selector",
     "LTXMotionStoryboardFileListSelector": "LTX Motion Storyboard File List Selector",
     "LTXMotionDebugImageStats": "LTX Motion Debug Image Stats",
     "LTXMotionDebugLatentStats": "LTX Motion Debug Latent Stats",
     "LTXMotionAudioSegmentLoop": "LTX Motion Audio Segment Loop",
     "LTXMotionSaveVideo": "LTX Motion Save Video",
+    "LTXMotionSanitizeAudio": "LTX Motion Sanitize Audio",
 }

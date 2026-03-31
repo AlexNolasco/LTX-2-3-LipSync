@@ -2565,7 +2565,7 @@
           "name": "audio",
           "shape": 7,
           "type": "AUDIO",
-          "link": 810
+          "link": 849
         },
         {
           "name": "fps",
@@ -2639,7 +2639,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "video/LTX_2.3_ia2v",
+        "video/gap_ltx23_storyboard_lipsync_music",
         "auto",
         "auto"
       ]
@@ -2690,7 +2690,7 @@
       },
       "widgets_values": [
         true,
-        "video/LTX_2.3_ia2v",
+        "video/gap_ltx23_storyboard_lipsync_music",
         true,
         true,
         ""
@@ -2739,7 +2739,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "ref2.png",
+        "",
         "image"
       ]
     },
@@ -2933,14 +2933,14 @@
       "mode": 0,
       "inputs": [],
       "outputs": [],
-      "title": "Geekatplay Studio Storyboard Notes",
+      "title": "GAP Storyboard Lip Sync Music Notes",
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.3.75",
         "Node name for S&R": "Note"
       },
       "widgets_values": [
-        "Geekatplay Studio workflow: duration-based storyboard song looper. Set image_count in the scheduler and assign one image per storyboard slot."
+        "GAP workflow: storyboard lip-sync with duration-based image changes while keeping the selected music in the final render. Set image_count in the scheduler and assign one image per storyboard slot."
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -3108,7 +3108,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "ref2close.png",
+        "",
         "image"
       ]
     },
@@ -3156,7 +3156,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "ref2.png",
+        "",
         "image"
       ]
     },
@@ -3204,7 +3204,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "ref2close3.png",
+        "",
         "image"
       ]
     },
@@ -3252,7 +3252,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "ref2.png",
+        "",
         "image"
       ]
     },
@@ -3300,7 +3300,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "ref2close.png",
+        "",
         "image"
       ]
     },
@@ -3348,7 +3348,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "ref2close2.png",
+        "",
         "image"
       ]
     },
@@ -3396,7 +3396,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "ref2.png",
+        "",
         "image"
       ]
     },
@@ -3444,7 +3444,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "ref2close.png",
+        "",
         "image"
       ]
     },
@@ -3492,7 +3492,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "ref2.png",
+        "",
         "image"
       ]
     },

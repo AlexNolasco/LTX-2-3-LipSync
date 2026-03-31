@@ -2573,7 +2573,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "video/LTX_2.3_ia2v_range"
+        "video/gap_ltx23_lipsync_range_stop"
       ],
       "title": "Save Final Video"
     },
@@ -2619,7 +2619,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "ref2.png",
+        "",
         "image"
       ]
     },
@@ -2870,9 +2870,9 @@
         "ver": "0.3.75",
         "Node name for S&R": "Note"
       },
-      "title": "Geekatplay Studio Audio Range Notes",
+      "title": "GAP Audio Range Notes",
       "widgets_values": [
-        "Geekatplay Studio workflow: lip-sync from a selected audio window so only the chosen range drives the IA2V render."
+        "GAP workflow: lip-sync from a selected audio window so only the chosen range drives the render and the workflow stops at the range end."
       ]
     },
     {

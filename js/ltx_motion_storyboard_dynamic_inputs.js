@@ -1,12 +1,30 @@
 import { app } from "../../scripts/app.js";
 
-const TARGET_CLASS = "LTXMotionStoryboardSegmentSelector";
+const NODE_CONFIGS = {
+    LTXMotionStoryboardSegmentSelector: {
+        minImageCount: 1,
+        durationOffset: 0,
+    },
+    LTXMotionStoryboardPairSelector: {
+        minImageCount: 2,
+        durationOffset: 1,
+    },
+};
 const IMAGE_PREFIX = "image_";
 const DURATION_PREFIX = "duration_";
 const MIN_IMAGE_COUNT = 1;
 const MAX_IMAGE_COUNT = 32;
 const MIN_NODE_WIDTH = 420;
+const DEFAULT_WIDGET_HEIGHT = 24;
+const NODE_VERTICAL_PADDING = 72;
 const audioDurationCache = new Map();
+
+function getNodeConfig(nodeOrClass) {
+    const comfyClass = typeof nodeOrClass === "string"
+        ? nodeOrClass
+        : nodeOrClass?.comfyClass;
+    return NODE_CONFIGS[comfyClass] ?? null;
+}
 
 function getImageIndex(name) {
     return Number.parseInt(String(name).slice(IMAGE_PREFIX.length), 10);
@@ -32,12 +50,18 @@ function getWidget(node, name) {
     return (node.widgets || []).find((widget) => widget?.name === name);
 }
 
-function clampImageCount(value) {
+function clampImageCount(value, minimum = MIN_IMAGE_COUNT) {
     const numeric = Number.parseInt(value, 10);
     if (!Number.isFinite(numeric)) {
-        return MIN_IMAGE_COUNT;
+        return minimum;
     }
-    return Math.min(MAX_IMAGE_COUNT, Math.max(MIN_IMAGE_COUNT, numeric));
+    return Math.min(MAX_IMAGE_COUNT, Math.max(minimum, numeric));
+}
+
+function getVisibleDurationCount(node, imageCount) {
+    const config = getNodeConfig(node);
+    const offset = config?.durationOffset ?? 0;
+    return Math.max(1, imageCount - offset);
 }
 
 function parseOptionalTimecode(value) {
@@ -94,16 +118,49 @@ function getNodeById(graph, nodeId) {
     return graph._nodes_by_id?.[nodeId] ?? null;
 }
 
-function getConnectedAudioFilename(node) {
+function readRangeSelectorSettings(originNode) {
+    const widgetValues = Array.isArray(originNode?.widgets_values) ? originNode.widgets_values : [];
+    const startTime = String(widgetValues[0] ?? "").trim();
+    const endTime = String(widgetValues[1] ?? "").trim();
+    const useLoadedAudio = widgetValues[2] !== false;
+    return { startTime, endTime, useLoadedAudio };
+}
+
+function getConnectedAudioSource(node) {
     const audioInput = (node.inputs || []).find((input) => input?.name === "audio");
     const link = getGraphLink(app.graph, audioInput?.link);
     const originNode = getNodeById(app.graph, link?.origin_id);
-    if (!originNode || originNode.type !== "LoadAudio") {
-        return null;
+    if (!originNode) {
+        return { mode: "none" };
     }
-    const widgetValues = Array.isArray(originNode.widgets_values) ? originNode.widgets_values : [];
-    const audioFile = typeof widgetValues[0] === "string" ? widgetValues[0].trim() : "";
-    return audioFile || null;
+
+    if (originNode.type === "LoadAudio") {
+        const widgetValues = Array.isArray(originNode.widgets_values) ? originNode.widgets_values : [];
+        const audioFile = typeof widgetValues[0] === "string" ? widgetValues[0].trim() : "";
+        return audioFile ? { mode: "audio", audioFile, startTime: "", endTime: "" } : { mode: "none" };
+    }
+
+    if (originNode.type === "LTXMotionAudioRangeExtractor") {
+        const { startTime, endTime, useLoadedAudio } = readRangeSelectorSettings(originNode);
+        if (!useLoadedAudio) {
+            return { mode: "silent", startTime, endTime };
+        }
+
+        const rangeAudioInput = (originNode.inputs || []).find((input) => input?.name === "audio");
+        const rangeLink = getGraphLink(app.graph, rangeAudioInput?.link);
+        const loadAudioNode = getNodeById(app.graph, rangeLink?.origin_id);
+        if (loadAudioNode?.type !== "LoadAudio") {
+            return { mode: "range", startTime, endTime };
+        }
+
+        const widgetValues = Array.isArray(loadAudioNode.widgets_values) ? loadAudioNode.widgets_values : [];
+        const audioFile = typeof widgetValues[0] === "string" ? widgetValues[0].trim() : "";
+        return audioFile
+            ? { mode: "audio", audioFile, startTime, endTime }
+            : { mode: "range", startTime, endTime };
+    }
+
+    return { mode: "none" };
 }
 
 async function getAudioDurationSeconds(audioFile) {
@@ -134,8 +191,16 @@ function resizeNode(node) {
     }
 
     const currentWidth = Array.isArray(node.size) ? node.size[0] : computedSize[0];
-    const imageCount = clampImageCount(getImageCountWidget(node)?.value ?? MIN_IMAGE_COUNT);
-    const minimumHeight = 210 + (imageCount * 24);
+    const widgetWidth = Math.max(MIN_NODE_WIDTH, currentWidth, computedSize[0]) - 20;
+    const visibleWidgetHeight = (node.widgets || []).reduce((total, widget) => {
+        if (!widget || widget.type === "hidden" || widget.__ltxHidden) {
+            return total;
+        }
+
+        const height = Math.max(0, widget.computeSize?.(widgetWidth)?.[1] ?? DEFAULT_WIDGET_HEIGHT);
+        return total + height + 4;
+    }, 0);
+    const minimumHeight = visibleWidgetHeight + NODE_VERTICAL_PADDING;
     node.size = [Math.max(MIN_NODE_WIDTH, currentWidth, computedSize[0]), Math.max(minimumHeight, computedSize[1])];
     app.graph.setDirtyCanvas(true, true);
 }
@@ -170,7 +235,7 @@ function ensureCounterWidget(node) {
         value: "Song counter: connect LoadAudio to show remaining time.",
         options: { serialize: false },
         computeSize(width) {
-            return [Math.max(width ?? 320, 320), 30];
+            return [Math.max(width ?? 320, 320), 42];
         },
         draw(ctx, _node, widgetWidth, y, widgetHeight) {
             const width = Math.max(0, widgetWidth - 20);
@@ -180,6 +245,9 @@ function ensureCounterWidget(node) {
             ctx.font = "12px sans-serif";
             ctx.fillStyle = widget.__ltxColor || "#d8dee9";
             ctx.textBaseline = "middle";
+            ctx.beginPath();
+            ctx.rect(x, y, width, widgetHeight);
+            ctx.clip();
             const text = String(widget.value || "");
             const clipped = text.length > 96 ? `${text.slice(0, 93)}...` : text;
             ctx.fillText(clipped, x, textY, width);
@@ -201,29 +269,45 @@ async function updateCounterWidget(node) {
     const updateToken = (node.__ltxCounterToken || 0) + 1;
     node.__ltxCounterToken = updateToken;
 
-    const imageCount = clampImageCount(getImageCountWidget(node)?.value ?? MIN_IMAGE_COUNT);
+    const minimum = getNodeConfig(node)?.minImageCount ?? MIN_IMAGE_COUNT;
+    const imageCount = clampImageCount(getImageCountWidget(node)?.value ?? minimum, minimum);
+    const visibleDurationCount = getVisibleDurationCount(node, imageCount);
     const visibleDurations = getDurationWidgets(node)
-        .filter((widget) => Number.parseInt(widget.name.slice(DURATION_PREFIX.length), 10) <= imageCount)
+        .filter((widget) => Number.parseInt(widget.name.slice(DURATION_PREFIX.length), 10) <= visibleDurationCount)
         .map((widget) => Number.parseFloat(widget.value))
         .filter((value) => Number.isFinite(value) && value > 0);
     const scheduledSeconds = visibleDurations.reduce((sum, value) => sum + value, 0);
 
-    const audioFile = getConnectedAudioFilename(node);
-    if (!audioFile) {
-        counter.widget.value = `Storyboard schedule: ${formatSeconds(scheduledSeconds)} planned. Connect LoadAudio directly to show remaining time.`;
+    const audioSource = getConnectedAudioSource(node);
+    if (audioSource.mode === "silent") {
+        const startSeconds = parseOptionalTimecode(audioSource.startTime) ?? 0;
+        const endSeconds = parseOptionalTimecode(audioSource.endTime) ?? startSeconds;
+        const usableWindow = Math.max(0, endSeconds - startSeconds);
+        const remainingSeconds = usableWindow - scheduledSeconds;
+        const leftLabel = remainingSeconds >= 0 ? `left ${formatSeconds(remainingSeconds)}` : `over by ${formatSeconds(Math.abs(remainingSeconds))}`;
+        counter.widget.value = `Silent window ${formatSeconds(usableWindow)} | scheduled ${formatSeconds(scheduledSeconds)} | ${leftLabel}`;
+        counter.widget.__ltxColor = remainingSeconds >= 0 ? "#d8dee9" : "#ff8f8f";
+        resizeNode(node);
+        return;
+    }
+
+    if (audioSource.mode !== "audio" || !audioSource.audioFile) {
+        counter.widget.value = `Storyboard schedule: ${formatSeconds(scheduledSeconds)} planned. Connect LoadAudio or Song Range Selector to show remaining time.`;
         counter.widget.__ltxColor = "#d8dee9";
         resizeNode(node);
         return;
     }
 
     try {
-        const totalDuration = await getAudioDurationSeconds(audioFile);
+        const totalDuration = await getAudioDurationSeconds(audioSource.audioFile);
         if (node.__ltxCounterToken !== updateToken) {
             return;
         }
 
-        const startSeconds = parseOptionalTimecode(getWidget(node, "start_time")?.value) ?? 0;
-        const endSeconds = parseOptionalTimecode(getWidget(node, "end_time")?.value);
+        const startValue = audioSource.startTime || getWidget(node, "start_time")?.value;
+        const endValue = audioSource.endTime || getWidget(node, "end_time")?.value;
+        const startSeconds = parseOptionalTimecode(startValue) ?? 0;
+        const endSeconds = parseOptionalTimecode(endValue);
         const windowStart = Math.max(0, Math.min(startSeconds, totalDuration));
         const windowEnd = endSeconds == null ? totalDuration : Math.max(windowStart, Math.min(endSeconds, totalDuration));
         const usableWindow = Math.max(0, windowEnd - windowStart);
@@ -237,14 +321,15 @@ async function updateCounterWidget(node) {
         if (node.__ltxCounterToken !== updateToken) {
             return;
         }
-        counter.widget.value = `Storyboard schedule: ${formatSeconds(scheduledSeconds)} planned. Duration lookup failed for ${audioFile}.`;
+        counter.widget.value = `Storyboard schedule: ${formatSeconds(scheduledSeconds)} planned. Duration lookup failed for ${audioSource.audioFile}.`;
         counter.widget.__ltxColor = "#ffd58a";
         resizeNode(node);
     }
 }
 
 function ensureImageInputs(node, activeImageCount) {
-    const desiredVisibleInputs = clampImageCount(activeImageCount);
+    const minimum = getNodeConfig(node)?.minImageCount ?? MIN_IMAGE_COUNT;
+    const desiredVisibleInputs = clampImageCount(activeImageCount, minimum);
     let currentInputs = getImageInputs(node);
     let maxIndex = currentInputs.length ? getImageIndex(currentInputs[currentInputs.length - 1].name) : 1;
 
@@ -324,10 +409,11 @@ function showWidget(widget) {
 }
 
 function syncDurationWidgets(node, activeImageCount) {
+    const visibleDurationCount = getVisibleDurationCount(node, activeImageCount);
     const durationWidgets = getDurationWidgets(node);
     for (const widget of durationWidgets) {
         const index = Number.parseInt(widget.name.slice(DURATION_PREFIX.length), 10);
-        if (index <= activeImageCount) {
+        if (index <= visibleDurationCount) {
             showWidget(widget);
         } else {
             hideWidget(widget);
@@ -340,7 +426,8 @@ function syncDurationWidgets(node, activeImageCount) {
 
 function syncImageInputs(node) {
     const widget = getImageCountWidget(node);
-    const imageCount = clampImageCount(widget?.value ?? MIN_IMAGE_COUNT);
+    const minimum = getNodeConfig(node)?.minImageCount ?? MIN_IMAGE_COUNT;
+    const imageCount = clampImageCount(widget?.value ?? minimum, minimum);
 
     if (widget) {
         widget.value = imageCount;
@@ -354,7 +441,7 @@ function syncImageInputs(node) {
 app.registerExtension({
     name: "LTX23Motion.StoryboardDynamicInputs",
     async beforeRegisterNodeDef(nodeType) {
-        if (nodeType.comfyClass !== TARGET_CLASS) {
+        if (!getNodeConfig(nodeType.comfyClass)) {
             return;
         }
 
@@ -373,7 +460,7 @@ app.registerExtension({
         };
     },
     async nodeCreated(node) {
-        if (node.comfyClass !== TARGET_CLASS) {
+        if (!getNodeConfig(node)) {
             return;
         }
 

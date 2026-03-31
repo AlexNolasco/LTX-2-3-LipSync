@@ -1166,7 +1166,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "ref2.png",
+        "",
         "image"
       ]
     },
@@ -1319,14 +1319,14 @@
       "mode": 0,
       "inputs": [],
       "outputs": [],
-      "title": "Geekatplay Studio Notes",
+      "title": "GAP Notes",
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.3.75",
         "Node name for S&R": "Note"
       },
       "widgets_values": [
-        "Geekatplay Studio workflow: minimal silent first-frame and last-frame IC-LoRA setup."
+        "GAP workflow: first/last-only simple setup for silent motion tests."
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -1555,7 +1555,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "ref2close.png",
+        "",
         "image"
       ]
     },

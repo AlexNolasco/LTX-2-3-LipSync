@@ -6,10 +6,19 @@ const MIN_PROMPT_COUNT = 1;
 const MAX_PROMPT_COUNT = 32;
 const MIN_NODE_WIDTH = 700;
 const MIN_ROW_HEIGHT = 108;
+const DEFAULT_WIDGET_HEIGHT = 24;
+const NODE_VERTICAL_PADDING = 96;
 const SCHEDULER_TYPES = new Set([
     "LTXMotionStoryboardSegmentSelector",
+    "LTXMotionStoryboardPairSelector",
     "LTXMotionStoryboardSegmentPromptSelector",
     "LTXMotionWaveformStoryboardSelector",
+    "LTXMotionWaveformStoryboardPairSelector",
+]);
+
+const PAIR_SCHEDULER_TYPES = new Set([
+    "LTXMotionStoryboardPairSelector",
+    "LTXMotionWaveformStoryboardPairSelector",
 ]);
 
 function getGraphLink(graph, linkId) {
@@ -58,7 +67,7 @@ function clampPromptCount(value) {
     return Math.min(MAX_PROMPT_COUNT, Math.max(MIN_PROMPT_COUNT, numeric));
 }
 
-function readSchedulerImageCount(originNode) {
+function readSchedulerPromptCount(originNode) {
     if (!originNode) {
         return null;
     }
@@ -80,14 +89,17 @@ function readSchedulerImageCount(originNode) {
     if (!Number.isFinite(numeric)) {
         return null;
     }
-    return clampPromptCount(numeric);
+    const promptCount = PAIR_SCHEDULER_TYPES.has(originNode.type)
+        ? Math.max(MIN_PROMPT_COUNT, numeric - 1)
+        : numeric;
+    return clampPromptCount(promptCount);
 }
 
 function getSynchronizedPromptCount(node) {
     const currentSegmentInput = (node.inputs || []).find((input) => input?.name === "current_segment");
     const currentSegmentLink = getGraphLink(app.graph, currentSegmentInput?.link);
     const originNode = getNodeById(app.graph, currentSegmentLink?.origin_id);
-    const schedulerCount = readSchedulerImageCount(originNode);
+    const schedulerCount = readSchedulerPromptCount(originNode);
     if (schedulerCount != null) {
         return schedulerCount;
     }
@@ -95,7 +107,7 @@ function getSynchronizedPromptCount(node) {
     const segmentCountInput = (node.inputs || []).find((input) => input?.name === "segment_count");
     const segmentCountLink = getGraphLink(app.graph, segmentCountInput?.link);
     const segmentOriginNode = getNodeById(app.graph, segmentCountLink?.origin_id);
-    return readSchedulerImageCount(segmentOriginNode);
+    return readSchedulerPromptCount(segmentOriginNode);
 }
 
 function getHideTargets(widget, collapseGrandparent = false) {
@@ -117,6 +129,8 @@ function hideWidget(widget, options = {}) {
     }
 
     widget.__ltxPromptOriginalType = widget.type;
+    widget.__ltxPromptOriginalHidden = widget.hidden;
+    widget.__ltxPromptOriginalDisabled = widget.disabled;
     widget.__ltxPromptOriginalComputeSize = widget.computeSize;
     widget.__ltxPromptOriginalSerializeValue = widget.serializeValue;
 
@@ -144,7 +158,9 @@ function hideWidget(widget, options = {}) {
     }
 
     widget.type = "hidden";
-    widget.computeSize = () => [0, -4];
+    widget.hidden = true;
+    widget.disabled = true;
+    widget.computeSize = () => [0, 0];
     widget.serializeValue = () => widget.value;
     widget.__ltxPromptHidden = true;
 }
@@ -155,6 +171,8 @@ function showWidget(widget) {
     }
 
     widget.type = widget.__ltxPromptOriginalType;
+    widget.hidden = widget.__ltxPromptOriginalHidden ?? false;
+    widget.disabled = widget.__ltxPromptOriginalDisabled ?? false;
     widget.computeSize = widget.__ltxPromptOriginalComputeSize;
     widget.serializeValue = widget.__ltxPromptOriginalSerializeValue;
 
@@ -170,12 +188,31 @@ function showWidget(widget) {
     widget.__ltxPromptHidden = false;
 }
 
+function getVisibleWidgetHeight(node) {
+    const width = Math.max(MIN_NODE_WIDTH, Array.isArray(node.size) ? node.size[0] : MIN_NODE_WIDTH) - 20;
+    return (node.widgets || []).reduce((total, widget) => {
+        if (!widget || widget.type === "hidden" || widget.__ltxPromptHidden) {
+            return total;
+        }
+
+        const computed = widget.computeSize?.(width);
+        const height = Math.max(0, computed?.[1] ?? DEFAULT_WIDGET_HEIGHT);
+        return total + height + 4;
+    }, 0);
+}
+
 function resizeNode(node, promptCount) {
     const computedSize = node.computeSize?.();
     const width = Math.max(MIN_NODE_WIDTH, computedSize?.[0] ?? 0, Array.isArray(node.size) ? node.size[0] : 0);
-    const editorHeight = 90 + (promptCount * MIN_ROW_HEIGHT);
-    const height = Math.max(editorHeight, computedSize?.[1] ?? 0, Array.isArray(node.size) ? node.size[1] : 0);
-    node.size = [width, height];
+    const editorHeight = 120 + (promptCount * MIN_ROW_HEIGHT);
+    const visibleWidgetHeight = getVisibleWidgetHeight(node) + NODE_VERTICAL_PADDING;
+    const height = Math.max(editorHeight, visibleWidgetHeight, computedSize?.[1] ?? 0);
+    if (typeof node.setSize === "function") {
+        node.setSize([width, height]);
+    } else {
+        node.size = [width, height];
+    }
+    node.setDirtyCanvas?.(true, true);
     app.graph.setDirtyCanvas(true, true);
 }
 
@@ -210,11 +247,15 @@ function syncEditor(node, force = false) {
     hideWidget(segmentCountWidget, { collapseGrandparent: true });
 
     const promptWidgets = getPromptWidgets(node);
-    showWidget(promptCountWidget);
+    if (synchronizedPromptCount != null) {
+        hideWidget(promptCountWidget, { collapseGrandparent: true });
+    } else {
+        showWidget(promptCountWidget);
+    }
     if (promptCountWidget?.inputEl) {
-        promptCountWidget.inputEl.disabled = synchronizedPromptCount != null;
+        promptCountWidget.inputEl.disabled = false;
         promptCountWidget.inputEl.title = synchronizedPromptCount != null
-            ? "Synced from connected storyboard or waveform scheduler image_count"
+            ? "Prompt count is synced from the connected storyboard or waveform scheduler"
             : "Manual prompt count";
     }
     for (const widget of promptWidgets) {

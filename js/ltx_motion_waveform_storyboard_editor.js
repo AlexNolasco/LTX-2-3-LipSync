@@ -1,11 +1,29 @@
 import { app } from "../../scripts/app.js";
 
-const TARGET_CLASS = "LTXMotionWaveformStoryboardSelector";
+const NODE_CONFIGS = {
+    LTXMotionWaveformStoryboardSelector: {
+        minImageCount: 1,
+        imageCountOffset: 0,
+        helpText: "Click waveform to scrub. Use Play to listen. Add keyframe at the current playhead. Each marker creates one image input and segment.",
+    },
+    LTXMotionWaveformStoryboardPairSelector: {
+        minImageCount: 2,
+        imageCountOffset: 1,
+        helpText: "Click waveform to scrub. Use Play to listen. Add keyframe at the current playhead. Each marker creates one start/end segment, so you will use one more image than keyframes.",
+    },
+};
 const IMAGE_PREFIX = "image_";
 const MIN_IMAGE_COUNT = 1;
 const MAX_IMAGE_COUNT = 32;
 const DEFAULT_WIDTH = 820;
 const DEFAULT_HEIGHT = 430;
+
+function getNodeConfig(nodeOrClass) {
+    const comfyClass = typeof nodeOrClass === "string"
+        ? nodeOrClass
+        : nodeOrClass?.comfyClass;
+    return NODE_CONFIGS[comfyClass] ?? null;
+}
 
 function getGraphLink(graph, linkId) {
     if (!graph || linkId == null) {
@@ -31,12 +49,12 @@ function getImageIndex(name) {
     return Number.parseInt(String(name).slice(IMAGE_PREFIX.length), 10);
 }
 
-function clampImageCount(value) {
+function clampImageCount(value, minimum = MIN_IMAGE_COUNT) {
     const numeric = Number.parseInt(value, 10);
     if (!Number.isFinite(numeric)) {
-        return MIN_IMAGE_COUNT;
+        return minimum;
     }
-    return Math.min(MAX_IMAGE_COUNT, Math.max(MIN_IMAGE_COUNT, numeric));
+    return Math.min(MAX_IMAGE_COUNT, Math.max(minimum, numeric));
 }
 
 function getWidget(node, name) {
@@ -80,7 +98,8 @@ function resizeNode(node) {
 }
 
 function ensureImageInputs(node, activeImageCount) {
-    const desiredVisibleInputs = clampImageCount(activeImageCount);
+    const minimum = getNodeConfig(node)?.minImageCount ?? MIN_IMAGE_COUNT;
+    const desiredVisibleInputs = clampImageCount(activeImageCount, minimum);
     let currentInputs = getImageInputs(node);
     let maxIndex = currentInputs.length ? getImageIndex(currentInputs[currentInputs.length - 1].name) : 1;
 
@@ -246,7 +265,7 @@ function buildEditor(node) {
     const help = document.createElement("div");
     help.style.fontSize = "12px";
     help.style.opacity = "0.75";
-    help.textContent = "Click waveform to scrub. Use Play to listen. Add keyframe at the current playhead. Each marker creates one image input and segment.";
+    help.textContent = getNodeConfig(node)?.helpText || "Click waveform to scrub. Use Play to listen. Add keyframe at the current playhead. Each marker creates one image input and segment.";
 
     const audio = document.createElement("audio");
     audio.preload = "metadata";
@@ -358,16 +377,17 @@ function buildEditor(node) {
     const syncKeyframes = (nextKeyframes, preferredSelectedIndex = null) => {
         const keyframesWidget = getWidget(node, "keyframes_json");
         const imageCountWidget = getWidget(node, "image_count");
+        const config = getNodeConfig(node) || NODE_CONFIGS.LTXMotionWaveformStoryboardSelector;
         const normalized = normalizeKeyframes(nextKeyframes, state.duration);
         const serialized = JSON.stringify(normalized.map((value) => Number(value.toFixed(3))));
         if (keyframesWidget) {
             keyframesWidget.value = serialized;
         }
         if (imageCountWidget) {
-            imageCountWidget.value = normalized.length;
+            imageCountWidget.value = normalized.length + (config.imageCountOffset || 0);
         }
         state.selectedIndex = Math.max(0, Math.min(preferredSelectedIndex ?? state.selectedIndex, normalized.length - 1));
-        ensureImageInputs(node, normalized.length);
+        ensureImageInputs(node, normalized.length + (config.imageCountOffset || 0));
         render();
     };
 
@@ -517,7 +537,7 @@ function buildEditor(node) {
     hideWidget(keyframesWidget);
     hideWidget(renderIdWidget);
     showWidget(audioFileWidget);
-    ensureImageInputs(node, clampImageCount(imageCountWidget?.value ?? 1));
+    ensureImageInputs(node, clampImageCount(imageCountWidget?.value ?? (getNodeConfig(node)?.minImageCount ?? 1), getNodeConfig(node)?.minImageCount ?? 1));
 
     requestAnimationFrame(() => {
         render();
@@ -534,6 +554,7 @@ function syncFromStoredState(node) {
     const imageCountWidget = getWidget(node, "image_count");
     const keyframesWidget = getWidget(node, "keyframes_json");
     const renderIdWidget = getWidget(node, "render_id");
+    const config = getNodeConfig(node) || NODE_CONFIGS.LTXMotionWaveformStoryboardSelector;
     hideWidget(imageCountWidget);
     hideWidget(keyframesWidget);
     hideWidget(renderIdWidget);
@@ -541,9 +562,9 @@ function syncFromStoredState(node) {
     const editor = buildEditor(node);
     const keyframes = normalizeKeyframes(parseKeyframes(keyframesWidget?.value), editor.duration);
     if (imageCountWidget) {
-        imageCountWidget.value = keyframes.length;
+        imageCountWidget.value = keyframes.length + (config.imageCountOffset || 0);
     }
-    ensureImageInputs(node, keyframes.length);
+    ensureImageInputs(node, keyframes.length + (config.imageCountOffset || 0));
     editor.selectedIndex = Math.max(0, Math.min(editor.selectedIndex, keyframes.length - 1));
     if (editor.container.isConnected) {
         editor.status.textContent = `time ${formatTime(editor.audio.currentTime || 0)} / ${formatTime(editor.duration)} | keyframes ${keyframes.length} | selected ${editor.selectedIndex + 1}`;
@@ -554,7 +575,7 @@ function syncFromStoredState(node) {
 app.registerExtension({
     name: "LTX23Motion.WaveformStoryboardEditor",
     async beforeRegisterNodeDef(nodeType) {
-        if (nodeType.comfyClass !== TARGET_CLASS) {
+        if (!getNodeConfig(nodeType.comfyClass)) {
             return;
         }
 
@@ -580,7 +601,7 @@ app.registerExtension({
         };
     },
     async nodeCreated(node) {
-        if (node.comfyClass !== TARGET_CLASS) {
+        if (!getNodeConfig(node)) {
             return;
         }
         buildEditor(node);

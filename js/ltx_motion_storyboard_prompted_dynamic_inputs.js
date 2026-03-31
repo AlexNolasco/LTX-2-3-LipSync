@@ -156,6 +156,8 @@ function hideWidget(widget) {
         return;
     }
     widget.__ltxPromptedOriginalType = widget.type;
+    widget.__ltxPromptedOriginalHidden = widget.hidden;
+    widget.__ltxPromptedOriginalDisabled = widget.disabled;
     widget.__ltxPromptedOriginalComputeSize = widget.computeSize;
     widget.__ltxPromptedOriginalSerializeValue = widget.serializeValue;
     const hideTargets = getHideTargets(widget);
@@ -175,7 +177,9 @@ function hideWidget(widget) {
         }
     }
     widget.type = "hidden";
-    widget.computeSize = () => [0, -4];
+    widget.hidden = true;
+    widget.disabled = true;
+    widget.computeSize = () => [0, 0];
     widget.serializeValue = () => widget.value;
     widget.__ltxPromptedHidden = true;
 }
@@ -185,6 +189,8 @@ function showWidget(widget) {
         return;
     }
     widget.type = widget.__ltxPromptedOriginalType;
+    widget.hidden = widget.__ltxPromptedOriginalHidden ?? false;
+    widget.disabled = widget.__ltxPromptedOriginalDisabled ?? false;
     widget.computeSize = widget.__ltxPromptedOriginalComputeSize;
     widget.serializeValue = widget.__ltxPromptedOriginalSerializeValue;
     if (Array.isArray(widget.__ltxPromptedHideTargets)) {
@@ -203,7 +209,13 @@ function resizeNode(node) {
     const currentWidth = Array.isArray(node.size) ? node.size[0] : computedSize[0];
     const imageCount = clampImageCount(getImageCountWidget(node)?.value ?? MIN_IMAGE_COUNT);
     const minimumHeight = 240 + (imageCount * 118);
-    node.size = [Math.max(MIN_NODE_WIDTH, currentWidth, computedSize[0]), Math.max(minimumHeight, computedSize[1])];
+    const nextSize = [Math.max(MIN_NODE_WIDTH, currentWidth, computedSize[0]), Math.max(minimumHeight, computedSize[1])];
+    if (typeof node.setSize === "function") {
+        node.setSize(nextSize);
+    } else {
+        node.size = nextSize;
+    }
+    node.setDirtyCanvas?.(true, true);
     app.graph.setDirtyCanvas(true, true);
 }
 

@@ -1,8 +1,8 @@
 {
   "id": "07824bbb-6672-4bb0-ac36-4313a519e35b",
   "revision": 0,
-  "last_node_id": 413,
-  "last_link_id": 862,
+  "last_node_id": 402,
+  "last_link_id": 836,
   "nodes": [
     {
       "id": 345,
@@ -24,7 +24,6 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            778,
             778
           ]
         }
@@ -66,7 +65,6 @@
           "name": "NOISE",
           "type": "NOISE",
           "links": [
-            754,
             754
           ]
         }
@@ -84,7 +82,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        567566616028012,
+        205097077856075,
         "randomize"
       ]
     },
@@ -100,7 +98,7 @@
         60
       ],
       "flags": {},
-      "order": 60,
+      "order": 51,
       "mode": 0,
       "inputs": [
         {
@@ -119,7 +117,6 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            782,
             782
           ]
         }
@@ -158,7 +155,6 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            780,
             780
           ]
         }
@@ -199,7 +195,6 @@
           "name": "SIGMAS",
           "type": "SIGMAS",
           "links": [
-            781,
             781
           ]
         }
@@ -232,7 +227,7 @@
         106.66666666666667
       ],
       "flags": {},
-      "order": 58,
+      "order": 49,
       "mode": 0,
       "inputs": [
         {
@@ -256,7 +251,6 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            779,
             779
           ]
         }
@@ -289,7 +283,7 @@
         120
       ],
       "flags": {},
-      "order": 54,
+      "order": 45,
       "mode": 0,
       "inputs": [
         {
@@ -323,7 +317,6 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            777,
             777
           ]
         },
@@ -359,7 +352,7 @@
         80
       ],
       "flags": {},
-      "order": 56,
+      "order": 47,
       "mode": 0,
       "inputs": [
         {
@@ -383,7 +376,6 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            752,
             752
           ]
         },
@@ -391,7 +383,6 @@
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
-            753,
             753
           ]
         },
@@ -428,7 +419,7 @@
         80
       ],
       "flags": {},
-      "order": 57,
+      "order": 48,
       "mode": 0,
       "inputs": [
         {
@@ -452,7 +443,6 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            768,
             768
           ]
         }
@@ -483,7 +473,7 @@
         130
       ],
       "flags": {},
-      "order": 59,
+      "order": 50,
       "mode": 0,
       "inputs": [
         {
@@ -515,7 +505,6 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            749,
             749
           ]
         }
@@ -557,7 +546,6 @@
           "name": "SAMPLER",
           "type": "SAMPLER",
           "links": [
-            756,
             756
           ]
         }
@@ -590,7 +578,7 @@
         26
       ],
       "flags": {},
-      "order": 32,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
@@ -604,9 +592,6 @@
           "name": "",
           "type": "VAE",
           "links": [
-            765,
-            766,
-            789,
             765,
             766,
             789
@@ -630,7 +615,7 @@
         60
       ],
       "flags": {},
-      "order": 64,
+      "order": 55,
       "mode": 0,
       "inputs": [
         {
@@ -650,7 +635,6 @@
           "name": "Audio",
           "type": "AUDIO",
           "links": [
-            810,
             810
           ]
         }
@@ -681,7 +665,7 @@
         380
       ],
       "flags": {},
-      "order": 49,
+      "order": 39,
       "mode": 0,
       "inputs": [
         {
@@ -703,7 +687,6 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            774,
             774
           ]
         }
@@ -738,7 +721,7 @@
         86.66666666666667
       ],
       "flags": {},
-      "order": 51,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
@@ -766,8 +749,6 @@
           "type": "CONDITIONING",
           "links": [
             759,
-            786,
-            759,
             786
           ]
         },
@@ -775,8 +756,6 @@
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
-            760,
-            787,
             760,
             787
           ]
@@ -818,7 +797,6 @@
           "name": "SIGMAS",
           "type": "SIGMAS",
           "links": [
-            757,
             757
           ]
         }
@@ -851,7 +829,7 @@
         60
       ],
       "flags": {},
-      "order": 55,
+      "order": 46,
       "mode": 0,
       "inputs": [
         {
@@ -866,8 +844,6 @@
           "type": "LATENT",
           "links": [
             761,
-            763,
-            761,
             763
           ]
         },
@@ -875,7 +851,6 @@
           "name": "audio_latent",
           "type": "LATENT",
           "links": [
-            750,
             750
           ]
         }
@@ -906,7 +881,7 @@
         120
       ],
       "flags": {},
-      "order": 61,
+      "order": 52,
       "mode": 0,
       "inputs": [
         {
@@ -940,7 +915,6 @@
           "name": "output",
           "type": "LATENT",
           "links": [
-            783,
             783
           ]
         },
@@ -976,7 +950,7 @@
         60
       ],
       "flags": {},
-      "order": 62,
+      "order": 53,
       "mode": 0,
       "inputs": [
         {
@@ -990,7 +964,6 @@
           "name": "video_latent",
           "type": "LATENT",
           "links": [
-            788,
             788
           ]
         },
@@ -998,7 +971,6 @@
           "name": "audio_latent",
           "type": "LATENT",
           "links": [
-            771,
             771
           ]
         }
@@ -1029,7 +1001,7 @@
         160
       ],
       "flags": {},
-      "order": 33,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
@@ -1043,7 +1015,6 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            775,
             775
           ]
         }
@@ -1078,7 +1049,7 @@
         106.66666666666667
       ],
       "flags": {},
-      "order": 53,
+      "order": 44,
       "mode": 0,
       "inputs": [
         {
@@ -1102,7 +1073,6 @@
           "name": "GUIDER",
           "type": "GUIDER",
           "links": [
-            755,
             755
           ]
         }
@@ -1135,7 +1105,7 @@
         150
       ],
       "flags": {},
-      "order": 63,
+      "order": 54,
       "mode": 0,
       "inputs": [
         {
@@ -1154,7 +1124,6 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            809,
             809
           ]
         }
@@ -1190,7 +1159,7 @@
         130
       ],
       "flags": {},
-      "order": 50,
+      "order": 41,
       "mode": 0,
       "inputs": [
         {
@@ -1222,7 +1191,6 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            794,
             794
           ]
         }
@@ -1266,9 +1234,6 @@
           "links": [
             800,
             802,
-            807,
-            800,
-            802,
             807
           ]
         }
@@ -1287,7 +1252,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        512,
+        720,
         "fixed"
       ]
     },
@@ -1305,7 +1270,7 @@
       "flags": {
         "collapsed": false
       },
-      "order": 29,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
@@ -1330,7 +1295,6 @@
           "name": "MASK",
           "type": "MASK",
           "links": [
-            797,
             797
           ]
         }
@@ -1357,8 +1321,8 @@
       },
       "widgets_values": [
         0,
-        512,
-        768
+        1024,
+        1024
       ]
     },
     {
@@ -1381,8 +1345,6 @@
           "name": "Audio VAE",
           "type": "VAE",
           "links": [
-            772,
-            799,
             772,
             799
           ]
@@ -1432,8 +1394,6 @@
           "type": "BOOLEAN",
           "links": [
             769,
-            793,
-            769,
             793
           ]
         }
@@ -1469,7 +1429,7 @@
       "flags": {
         "collapsed": false
       },
-      "order": 44,
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
@@ -1483,7 +1443,6 @@
           "name": "images",
           "type": "IMAGE",
           "links": [
-            805,
             805
           ]
         }
@@ -1516,7 +1475,7 @@
         66.66666666666667
       ],
       "flags": {},
-      "order": 47,
+      "order": 37,
       "mode": 0,
       "inputs": [
         {
@@ -1530,8 +1489,6 @@
           "name": "output_image",
           "type": "IMAGE",
           "links": [
-            767,
-            791,
             767,
             791
           ]
@@ -1567,7 +1524,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 28,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
@@ -1594,7 +1551,6 @@
           "name": "INT",
           "type": "INT",
           "links": [
-            812,
             812
           ]
         }
@@ -1629,7 +1585,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 35,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
@@ -1651,8 +1607,6 @@
           "name": "FLOAT",
           "type": "FLOAT",
           "links": [
-            776,
-            811,
             776,
             811
           ]
@@ -1691,7 +1645,7 @@
         146.66666666666669
       ],
       "flags": {},
-      "order": 46,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
@@ -1724,7 +1678,6 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            792,
             792
           ]
         }
@@ -1742,9 +1695,9 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        512,
         768,
-        49,
+        512,
+        97,
         1
       ]
     },
@@ -1770,9 +1723,6 @@
           "links": [
             801,
             803,
-            806,
-            801,
-            803,
             806
           ]
         }
@@ -1791,7 +1741,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        768,
+        1280,
         "fixed"
       ]
     },
@@ -1807,7 +1757,7 @@
         50
       ],
       "flags": {},
-      "order": 37,
+      "order": 36,
       "mode": 0,
       "inputs": [
         {
@@ -1827,7 +1777,6 @@
           "name": "Audio Latent",
           "type": "LATENT",
           "links": [
-            796,
             796
           ]
         }
@@ -1858,7 +1807,7 @@
         50
       ],
       "flags": {},
-      "order": 52,
+      "order": 43,
       "mode": 0,
       "inputs": [
         {
@@ -1877,7 +1826,6 @@
           "name": "latent",
           "type": "LATENT",
           "links": [
-            758,
             758
           ]
         }
@@ -1908,7 +1856,7 @@
         71.0625
       ],
       "flags": {},
-      "order": 43,
+      "order": 40,
       "mode": 0,
       "inputs": [
         {
@@ -1927,7 +1875,6 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            795,
             795
           ]
         }
@@ -1973,7 +1920,6 @@
           "name": "LATENT_UPSCALE_MODEL",
           "type": "LATENT_UPSCALE_MODEL",
           "links": [
-            764,
             764
           ]
         }
@@ -2013,7 +1959,7 @@
         95.546875
       ],
       "flags": {},
-      "order": 31,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
@@ -2027,8 +1973,6 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            751,
-            785,
             751,
             785
           ]
@@ -2079,8 +2023,6 @@
           "type": "MODEL",
           "links": [
             762,
-            822,
-            762,
             822
           ]
         },
@@ -2093,8 +2035,6 @@
           "name": "VAE",
           "type": "VAE",
           "links": [
-            770,
-            790,
             770,
             790
           ]
@@ -2143,9 +2083,6 @@
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            773,
-            784,
-            823,
             773,
             784,
             823
@@ -2202,7 +2139,6 @@
           "name": "STRING",
           "type": "STRING",
           "links": [
-            825,
             825
           ]
         }
@@ -2238,7 +2174,7 @@
       "flags": {
         "collapsed": false
       },
-      "order": 45,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
@@ -2266,8 +2202,6 @@
           "name": "generated_text",
           "type": "STRING",
           "links": [
-            821,
-            824,
             821,
             824
           ]
@@ -2309,7 +2243,7 @@
         126
       ],
       "flags": {},
-      "order": 34,
+      "order": 28,
       "mode": 0,
       "inputs": [
         {
@@ -2333,7 +2267,6 @@
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            820,
             820
           ]
         }
@@ -2375,13 +2308,13 @@
         154
       ],
       "flags": {},
-      "order": 39,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
           "name": "input",
           "type": "IMAGE,MASK",
-          "link": 850
+          "link": 817
         },
         {
           "name": "resize_type.width",
@@ -2405,8 +2338,6 @@
           "name": "resized",
           "type": "IMAGE",
           "links": [
-            804,
-            826,
             804,
             826
           ]
@@ -2444,7 +2375,7 @@
         290
       ],
       "flags": {},
-      "order": 48,
+      "order": 38,
       "mode": 0,
       "inputs": [
         {
@@ -2517,8 +2448,6 @@
           "type": "INT",
           "links": [
             808,
-            831,
-            808,
             831
           ]
         }
@@ -2537,7 +2466,7 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        12,
+        24,
         "fixed"
       ]
     },
@@ -2553,7 +2482,7 @@
         86.66666666666667
       ],
       "flags": {},
-      "order": 65,
+      "order": 56,
       "mode": 0,
       "inputs": [
         {
@@ -2581,8 +2510,6 @@
           "name": "VIDEO",
           "type": "VIDEO",
           "links": [
-            819,
-            830,
             819,
             830
           ]
@@ -2616,7 +2543,7 @@
         570
       ],
       "flags": {},
-      "order": 66,
+      "order": 57,
       "mode": 4,
       "inputs": [
         {
@@ -2639,24 +2566,371 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "video/LTX_2.3_ia2v",
+        "video/gap_ltx23_lipsync_long_audio",
         "auto",
         "auto"
+      ]
+    },
+    {
+      "id": 374,
+      "type": "ComfyMathExpression",
+      "pos": [
+        -845,
+        4509
+      ],
+      "size": [
+        210,
+        128
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 24,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "a",
+          "name": "values.a",
+          "type": "FLOAT,INT",
+          "link": 806
+        },
+        {
+          "label": "b",
+          "name": "values.b",
+          "shape": 7,
+          "type": "FLOAT,INT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "FLOAT",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            813
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.16.3",
+        "Node name for S&R": "ComfyMathExpression",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        "a/2"
+      ]
+    },
+    {
+      "id": 401,
+      "type": "Note",
+      "pos": [
+        -4380,
+        3040
+      ],
+      "size": [
+        700,
+        250
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "GAP Notes",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.75",
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "GAP workflow: lip-sync loop for long audio with one main image."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 269,
+      "type": "LoadImage",
+      "pos": [
+        -2838.10544605767,
+        4484.895230099307
+      ],
+      "size": [
+        400,
+        469.9869791666667
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            817
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.16.3",
+        "Node name for S&R": "LoadImage",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        "",
+        "image"
+      ]
+    },
+    {
+      "id": 399,
+      "type": "LTXMotionSegmentedAudioLoader",
+      "pos": [
+        -907.3577219689074,
+        4923.414076182761
+      ],
+      "size": [
+        346.6978515625,
+        146
+      ],
+      "flags": {},
+      "order": 32,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 836
+        },
+        {
+          "name": "segment_seconds",
+          "type": "FLOAT",
+          "widget": {
+            "name": "segment_seconds"
+          },
+          "link": 832
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            833
+          ]
+        },
+        {
+          "name": "current_segment",
+          "type": "INT",
+          "links": [
+            834
+          ]
+        },
+        {
+          "name": "total_segments",
+          "type": "INT",
+          "links": [
+            835
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LTXMotionSegmentedAudioLoader"
+      },
+      "widgets_values": [
+        20,
+        0
+      ]
+    },
+    {
+      "id": 381,
+      "type": "ComfyMathExpression",
+      "pos": [
+        -929.4266846220705,
+        4679.053318860466
+      ],
+      "size": [
+        400,
+        148
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 31,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "a",
+          "name": "values.a",
+          "type": "FLOAT,INT",
+          "link": 815
+        },
+        {
+          "label": "b",
+          "name": "values.b",
+          "shape": 7,
+          "type": "FLOAT,INT",
+          "link": 831
+        },
+        {
+          "label": "c",
+          "name": "values.c",
+          "shape": 7,
+          "type": "FLOAT,INT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "FLOAT",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            814
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.16.3",
+        "Node name for S&R": "ComfyMathExpression",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        "ceil((a * b - 1) / 8) * 8 + 1"
+      ]
+    },
+    {
+      "id": 339,
+      "type": "RecordAudio",
+      "pos": [
+        -2042.800326197573,
+        4709.959891532068
+      ],
+      "size": [
+        390,
+        112
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 4,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.16.3",
+        "Node name for S&R": "RecordAudio",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 383,
+      "type": "TrimAudioDuration",
+      "pos": [
+        -1620.0474634050797,
+        4720.213197468561
+      ],
+      "size": [
+        320,
+        82
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.16.3",
+        "Node name for S&R": "TrimAudioDuration",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        0,
+        60
       ]
     },
     {
       "id": 396,
       "type": "LTXMotionAudioSegmentLoop",
       "pos": [
-        2740.003170545283,
-        4599.907770277047
+        2786.594645997587,
+        4463.542476270309
       ],
       "size": [
         360,
         194
       ],
       "flags": {},
-      "order": 67,
+      "order": 58,
       "mode": 0,
       "inputs": [
         {
@@ -2690,109 +2964,42 @@
       },
       "widgets_values": [
         true,
-        "video/LTX_2.3_ia2v",
+        "video/gap_ltx23_lipsync_long_audio",
         true,
         true,
         ""
       ]
     },
     {
-      "id": 269,
-      "type": "LoadImage",
+      "id": 378,
+      "type": "PrimitiveFloat",
       "pos": [
-        -2838.10544605767,
-        4484.895230099307
+        -2205,
+        4489
       ],
       "size": [
-        400,
-        469.9869791666667
+        340,
+        58
       ],
       "flags": {},
-      "order": 16,
+      "order": 20,
       "mode": 0,
       "inputs": [],
       "outputs": [
         {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            837
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Image 1",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "LoadImage",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ref2.png",
-        "image"
-      ]
-    },
-    {
-      "id": 374,
-      "type": "ComfyMathExpression",
-      "pos": [
-        -845,
-        4509
-      ],
-      "size": [
-        210,
-        128
-      ],
-      "flags": {
-        "collapsed": false
-      },
-      "order": 30,
-      "mode": 0,
-      "inputs": [
-        {
-          "label": "a",
-          "name": "values.a",
-          "type": "FLOAT,INT",
-          "link": 806
-        },
-        {
-          "label": "b",
-          "name": "values.b",
-          "shape": 7,
-          "type": "FLOAT,INT",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
           "name": "FLOAT",
           "type": "FLOAT",
-          "links": []
-        },
-        {
-          "name": "INT",
-          "type": "INT",
           "links": [
-            813,
-            813
+            815,
+            832
           ]
         }
       ],
+      "title": "Duration",
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.16.3",
-        "Node name for S&R": "ComfyMathExpression",
+        "Node name for S&R": "PrimitiveFloat",
         "enableTabs": false,
         "tabWidth": 65,
         "tabXOffset": 10,
@@ -2802,91 +3009,22 @@
         "secondTabWidth": 65
       },
       "widgets_values": [
-        "a/2"
-      ]
-    },
-    {
-      "id": 381,
-      "type": "ComfyMathExpression",
-      "pos": [
-        -932.2441493742758,
-        4648.061206586208
-      ],
-      "size": [
-        400,
-        148
-      ],
-      "flags": {
-        "collapsed": false
-      },
-      "order": 41,
-      "mode": 0,
-      "inputs": [
-        {
-          "label": "a",
-          "name": "values.a",
-          "type": "FLOAT,INT",
-          "link": 852
-        },
-        {
-          "label": "b",
-          "name": "values.b",
-          "shape": 7,
-          "type": "FLOAT,INT",
-          "link": 831
-        },
-        {
-          "label": "c",
-          "name": "values.c",
-          "shape": 7,
-          "type": "FLOAT,INT",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "FLOAT",
-          "type": "FLOAT",
-          "links": []
-        },
-        {
-          "name": "INT",
-          "type": "INT",
-          "links": [
-            814,
-            814
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "ComfyMathExpression",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ceil((a * b - 1) / 8) * 8 + 1"
+        8
       ]
     },
     {
       "id": 400,
       "type": "LoadAudio",
       "pos": [
-        -1673.3231221979672,
-        4898.7526150996955
+        -2055.6302699362304,
+        4899.483215532547
       ],
       "size": [
         400,
         140
       ],
       "flags": {},
-      "order": 17,
+      "order": 21,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -2894,7 +3032,6 @@
           "name": "AUDIO",
           "type": "AUDIO",
           "links": [
-            836,
             836
           ]
         }
@@ -2915,714 +3052,6 @@
         "Sweet Dreams (Are Made of This).wav",
         null,
         null
-      ]
-    },
-    {
-      "id": 401,
-      "type": "Note",
-      "pos": [
-        -4380,
-        3040
-      ],
-      "size": [
-        700,
-        270
-      ],
-      "flags": {},
-      "order": 18,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Geekatplay Studio Storyboard Notes",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.75",
-        "Node name for S&R": "Note"
-      },
-      "widgets_values": [
-        "Geekatplay Studio workflow: waveform storyboard song looper. Add keyframes on the waveform and connect one image per marker so each segment follows your timing."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
-      "id": 411,
-      "type": "PreviewAny",
-      "pos": [
-        501.57287221481425,
-        5144.113400915213
-      ],
-      "size": [
-        480,
-        290
-      ],
-      "flags": {},
-      "order": 40,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "source",
-          "type": "*",
-          "link": 851
-        }
-      ],
-      "outputs": [],
-      "title": "Preview Current Storyboard Image",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "PreviewAny",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "id": 412,
-      "type": "PreviewAudio",
-      "pos": [
-        173.35638244743927,
-        4776.706929034494
-      ],
-      "size": [
-        390,
-        120
-      ],
-      "flags": {},
-      "order": 38,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "audio",
-          "type": "AUDIO",
-          "link": 849
-        }
-      ],
-      "outputs": [],
-      "title": "Preview Current Segment Audio",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "PreviewAudio",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 413,
-      "type": "PreviewAny",
-      "pos": [
-        345.78347845426293,
-        5637.465386605886
-      ],
-      "size": [
-        480,
-        290
-      ],
-      "flags": {},
-      "order": 42,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "source",
-          "type": "*",
-          "link": 853
-        }
-      ],
-      "outputs": [],
-      "title": "Storyboard Info",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "PreviewAny",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        null,
-        null,
-        null
-      ]
-    },
-    {
-      "id": 402,
-      "type": "LoadImage",
-      "pos": [
-        -2960,
-        5060
-      ],
-      "size": [
-        400,
-        469.9869791666667
-      ],
-      "flags": {},
-      "order": 19,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            840,
-            854
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Image 2",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "LoadImage",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ref2close.png",
-        "image"
-      ]
-    },
-    {
-      "id": 405,
-      "type": "LoadImage",
-      "pos": [
-        -2460,
-        5060
-      ],
-      "size": [
-        400,
-        469.9869791666667
-      ],
-      "flags": {},
-      "order": 20,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            843,
-            855
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Image 5",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "LoadImage",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ref2.png",
-        "image"
-      ]
-    },
-    {
-      "id": 410,
-      "type": "LoadImage",
-      "pos": [
-        -2002.0933866830692,
-        5093.155774664533
-      ],
-      "size": [
-        400,
-        469.9869791666667
-      ],
-      "flags": {},
-      "order": 21,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            848,
-            862
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Image 10",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "LoadImage",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ref2close3.png",
-        "image"
-      ]
-    },
-    {
-      "id": 408,
-      "type": "LoadImage",
-      "pos": [
-        -3028.805992300543,
-        5667.608886033873
-      ],
-      "size": [
-        400,
-        469.9869791666667
-      ],
-      "flags": {},
-      "order": 22,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            846,
-            856
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Image 8",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "LoadImage",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ref2.png",
-        "image"
-      ]
-    },
-    {
-      "id": 403,
-      "type": "LoadImage",
-      "pos": [
-        -2520.764660698407,
-        5642.093386683068
-      ],
-      "size": [
-        400,
-        469.9869791666667
-      ],
-      "flags": {},
-      "order": 23,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            841,
-            857
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Image 3",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "LoadImage",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ref2close.png",
-        "image"
-      ]
-    },
-    {
-      "id": 406,
-      "type": "LoadImage",
-      "pos": [
-        -2007.9536299687768,
-        5651.244122918519
-      ],
-      "size": [
-        400,
-        469.9869791666667
-      ],
-      "flags": {},
-      "order": 24,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            844,
-            858
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Image 6",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "LoadImage",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ref2close2.png",
-        "image"
-      ]
-    },
-    {
-      "id": 409,
-      "type": "LoadImage",
-      "pos": [
-        -2953.7699551698547,
-        6244.21183097567
-      ],
-      "size": [
-        400,
-        469.9869791666667
-      ],
-      "flags": {},
-      "order": 25,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            847,
-            859
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Image 9",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "LoadImage",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ref2.png",
-        "image"
-      ]
-    },
-    {
-      "id": 404,
-      "type": "LoadImage",
-      "pos": [
-        -2489.6521574978774,
-        6226.01692061323
-      ],
-      "size": [
-        400,
-        469.9869791666667
-      ],
-      "flags": {},
-      "order": 26,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            842,
-            860
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Image 4",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "LoadImage",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ref2close.png",
-        "image"
-      ]
-    },
-    {
-      "id": 407,
-      "type": "LoadImage",
-      "pos": [
-        -2004.2933354745971,
-        6204.055153648148
-      ],
-      "size": [
-        400,
-        469.9869791666667
-      ],
-      "flags": {},
-      "order": 27,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            845,
-            861
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "title": "Image 7",
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.16.3",
-        "Node name for S&R": "LoadImage",
-        "enableTabs": false,
-        "tabWidth": 65,
-        "tabXOffset": 10,
-        "hasSecondTab": false,
-        "secondTabText": "Send Back",
-        "secondTabOffset": 80,
-        "secondTabWidth": 65
-      },
-      "widgets_values": [
-        "ref2.png",
-        "image"
-      ]
-    },
-    {
-      "id": 399,
-      "type": "LTXMotionWaveformStoryboardSelector",
-      "pos": [
-        -714.8309639015391,
-        4869.882245890858
-      ],
-      "size": [
-        860,
-        470
-      ],
-      "flags": {},
-      "order": 36,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "audio",
-          "type": "AUDIO",
-          "link": 836
-        },
-        {
-          "name": "image_1",
-          "type": "IMAGE",
-          "link": 837
-        },
-        {
-          "name": "image_2",
-          "type": "IMAGE",
-          "link": 854
-        },
-        {
-          "name": "image_3",
-          "type": "IMAGE",
-          "link": 855
-        },
-        {
-          "name": "image_4",
-          "type": "IMAGE",
-          "link": 862
-        },
-        {
-          "name": "image_5",
-          "type": "IMAGE",
-          "link": 856
-        },
-        {
-          "name": "image_6",
-          "type": "IMAGE",
-          "link": 857
-        },
-        {
-          "name": "image_7",
-          "type": "IMAGE",
-          "link": 858
-        },
-        {
-          "name": "image_8",
-          "type": "IMAGE",
-          "link": 859
-        },
-        {
-          "name": "image_9",
-          "type": "IMAGE",
-          "link": 860
-        },
-        {
-          "name": "image_10",
-          "type": "IMAGE",
-          "link": 861
-        }
-      ],
-      "outputs": [
-        {
-          "name": "audio",
-          "type": "AUDIO",
-          "links": [
-            833,
-            849
-          ]
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "links": [
-            850,
-            851
-          ]
-        },
-        {
-          "name": "current_segment",
-          "type": "INT",
-          "links": [
-            834
-          ]
-        },
-        {
-          "name": "total_segments",
-          "type": "INT",
-          "links": [
-            835
-          ]
-        },
-        {
-          "name": "segment_duration_seconds",
-          "type": "FLOAT",
-          "links": [
-            852
-          ]
-        },
-        {
-          "name": "debug_text",
-          "type": "STRING",
-          "links": [
-            853
-          ]
-        }
-      ],
-      "title": "Waveform Storyboard Editor",
-      "properties": {
-        "Node name for S&R": "LTXMotionWaveformStoryboardSelector",
-        "cnr_id": "LTX2-3-motion",
-        "ver": "0.1.0"
-      },
-      "widgets_values": [
-        "Sweet Dreams (Are Made of This).wav",
-        10,
-        "[0, 15, 25, 35, 45, 55, 65, 75, 85, 95]"
       ]
     }
   ],
@@ -4020,6 +3449,14 @@
       "MASK"
     ],
     [
+      798,
+      383,
+      0,
+      384,
+      0,
+      "AUDIO"
+    ],
+    [
       799,
       370,
       0,
@@ -4148,6 +3585,22 @@
       "INT"
     ],
     [
+      815,
+      378,
+      0,
+      381,
+      0,
+      "FLOAT"
+    ],
+    [
+      817,
+      269,
+      0,
+      394,
+      0,
+      "IMAGE"
+    ],
+    [
       819,
       377,
       0,
@@ -4228,6 +3681,14 @@
       "INT"
     ],
     [
+      832,
+      378,
+      0,
+      399,
+      1,
+      "FLOAT"
+    ],
+    [
       833,
       399,
       0,
@@ -4238,7 +3699,7 @@
     [
       834,
       399,
-      2,
+      1,
       396,
       1,
       "INT"
@@ -4246,7 +3707,7 @@
     [
       835,
       399,
-      3,
+      2,
       396,
       2,
       "INT"
@@ -4258,198 +3719,6 @@
       399,
       0,
       "AUDIO"
-    ],
-    [
-      837,
-      269,
-      0,
-      399,
-      1,
-      "IMAGE"
-    ],
-    [
-      840,
-      402,
-      0,
-      399,
-      2,
-      "IMAGE"
-    ],
-    [
-      841,
-      403,
-      0,
-      399,
-      3,
-      "IMAGE"
-    ],
-    [
-      842,
-      404,
-      0,
-      399,
-      4,
-      "IMAGE"
-    ],
-    [
-      843,
-      405,
-      0,
-      399,
-      5,
-      "IMAGE"
-    ],
-    [
-      844,
-      406,
-      0,
-      399,
-      6,
-      "IMAGE"
-    ],
-    [
-      845,
-      407,
-      0,
-      399,
-      7,
-      "IMAGE"
-    ],
-    [
-      846,
-      408,
-      0,
-      399,
-      8,
-      "IMAGE"
-    ],
-    [
-      847,
-      409,
-      0,
-      399,
-      9,
-      "IMAGE"
-    ],
-    [
-      848,
-      410,
-      0,
-      399,
-      10,
-      "IMAGE"
-    ],
-    [
-      849,
-      399,
-      0,
-      412,
-      0,
-      "AUDIO"
-    ],
-    [
-      850,
-      399,
-      1,
-      394,
-      0,
-      "IMAGE"
-    ],
-    [
-      851,
-      399,
-      1,
-      411,
-      0,
-      "IMAGE"
-    ],
-    [
-      852,
-      399,
-      4,
-      381,
-      0,
-      "FLOAT"
-    ],
-    [
-      853,
-      399,
-      5,
-      413,
-      0,
-      "STRING"
-    ],
-    [
-      854,
-      402,
-      0,
-      399,
-      2,
-      "IMAGE"
-    ],
-    [
-      855,
-      405,
-      0,
-      399,
-      3,
-      "IMAGE"
-    ],
-    [
-      856,
-      408,
-      0,
-      399,
-      5,
-      "IMAGE"
-    ],
-    [
-      857,
-      403,
-      0,
-      399,
-      6,
-      "IMAGE"
-    ],
-    [
-      858,
-      406,
-      0,
-      399,
-      7,
-      "IMAGE"
-    ],
-    [
-      859,
-      409,
-      0,
-      399,
-      8,
-      "IMAGE"
-    ],
-    [
-      860,
-      404,
-      0,
-      399,
-      9,
-      "IMAGE"
-    ],
-    [
-      861,
-      407,
-      0,
-      399,
-      10,
-      "IMAGE"
-    ],
-    [
-      862,
-      410,
-      0,
-      399,
-      4,
-      "IMAGE"
     ]
   ],
   "groups": [
@@ -4587,10 +3856,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 1.1712657620354967,
+      "scale": 1.1712657620354976,
       "offset": [
-        2162.4874064054293,
-        -4605.741047866997
+        2573.5241730523985,
+        -4093.1709284025746
       ]
     },
     "frontendVersion": "1.41.20",

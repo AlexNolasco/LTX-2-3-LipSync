@@ -1,8 +1,8 @@
 {
   "id": "394ed254-7306-42a2-9ae6-aa880ce4456d",
   "revision": 0,
-  "last_node_id": 6006,
-  "last_link_id": 13567,
+  "last_node_id": 6012,
+  "last_link_id": 13581,
   "nodes": [
     {
       "id": 4849,
@@ -28,7 +28,7 @@
           "name": "audio",
           "shape": 7,
           "type": "AUDIO",
-          "link": null
+          "link": 13574
         },
         {
           "name": "fps",
@@ -44,11 +44,11 @@
           "name": "VIDEO",
           "type": "VIDEO",
           "links": [
-            13112
+            13581
           ]
         }
       ],
-      "title": "Create Silent Video",
+      "title": "Create Looped Video",
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.14.1",
@@ -76,8 +76,8 @@
       "outputs": [
         {
           "name": "NOISE",
-          "type": "NOISE",
-          "links": [
+          "link": 13572,
+          "links" : [
             13093
           ]
         }
@@ -390,7 +390,7 @@
           "widget": {
             "name": "frames_number"
           },
-          "link": 13558
+          "link": 13580
         },
         {
           "name": "frame_rate",
@@ -1102,7 +1102,7 @@
           "widget": {
             "name": "length"
           },
-          "link": 13557
+          "link": 13579
         }
       ],
       "outputs": [
@@ -1195,7 +1195,7 @@
         {
           "name": "input",
           "type": "IMAGE,MASK",
-          "link": 13454
+          "link": 13572
         }
       ],
       "outputs": [
@@ -1237,7 +1237,7 @@
         {
           "name": "video",
           "type": "VIDEO",
-          "link": 13112
+          "link": null
         }
       ],
       "outputs": [],
@@ -1452,14 +1452,14 @@
       "mode": 0,
       "inputs": [],
       "outputs": [],
-      "title": "Geekatplay Studio Notes",
+      "title": "GAP Notes",
       "properties": {
         "cnr_id": "comfy-core",
         "ver": "0.3.75",
         "Node name for S&R": "Note"
       },
       "widgets_values": [
-        "Geekatplay Studio workflow: hybrid silent setup with sparse motion-track conditioning for the first IC-LoRA guide and a last-frame IC-LoRA guide for the endpoint."
+        "GAP workflow: first/last-only motion-track setup with sparse motion guidance on the first IC-LoRA guide and a last-frame IC-LoRA guide for the endpoint."
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -1508,8 +1508,8 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            13454,
-            13554
+            13554,
+            13570
           ]
         },
         {
@@ -1525,7 +1525,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "ref2.png",
+        "",
         "image"
       ]
     },
@@ -1593,7 +1593,7 @@
           "type": "IMAGE",
           "links": [
             13555,
-            13563
+            13571
           ]
         },
         {
@@ -1609,7 +1609,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-        "ref2close.png",
+        "",
         "image"
       ]
     },
@@ -1666,11 +1666,7 @@
         {
           "name": "INT",
           "type": "INT",
-          "links": [
-            13556,
-            13557,
-            13558
-          ]
+          "links": []
         }
       ],
       "title": "number of frames",
@@ -1752,7 +1748,7 @@
           "widget": {
             "name": "points_to_sample"
           },
-          "link": 13556
+          "link": 13578
         }
       ],
       "outputs": [
@@ -2097,7 +2093,7 @@
         "Node name for S&R": "Note"
       },
       "widgets_values": [
-        "Sparse tracks are active in this workflow.\nEdit the motion paths in LTXVSparseTrackEditor, then the rendered track image is passed into the first IC-LoRA guide.\nThis tuned version also preprocesses the last frame and keeps the endpoint guide softer to reduce hard jumps."
+        "Sparse tracks are active in this workflow.\nEdit the motion paths in LTXVSparseTrackEditor, then the rendered track image is passed into the first IC-LoRA guide.\nIn this looper version, the storyboard scheduler swaps which image is treated as start and end for each segment, so with two images it renders 1->2, then 2->1, then repeats.\nTurn OFF use_loaded_audio in Song Range Selector to loop by time only with silent audio."
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -2120,7 +2116,7 @@
         {
           "name": "input",
           "type": "IMAGE,MASK",
-          "link": 13563
+          "link": 13573
         },
         {
           "name": "resize_type.width",
@@ -2201,6 +2197,390 @@
         18
       ],
       "title": "Last Frame Preprocess"
+    },
+    {
+      "id": 6007,
+      "type": "LoadAudio",
+      "pos": [
+        -4410,
+        4560
+      ],
+      "size": [
+        400,
+        140
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "AUDIO",
+          "type": "AUDIO",
+          "links": [
+            13568
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.16.3",
+        "Node name for S&R": "LoadAudio",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        "",
+        null,
+        null
+      ]
+    },
+    {
+      "id": 6008,
+      "type": "LTXMotionAudioRangeExtractor",
+      "pos": [
+        -3990,
+        4560
+      ],
+      "size": [
+        360,
+        126
+      ],
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 13568
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            13569
+          ]
+        },
+        {
+          "name": "duration_seconds",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "debug_text",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "Song Range Selector",
+      "properties": {
+        "aux_id": "LTX2-3-motion/workflows",
+        "ver": "0.1.0",
+        "Node name for S&R": "LTXMotionAudioRangeExtractor",
+        "cnr_id": "LTX2-3-motion"
+      },
+      "widgets_values": [
+        "0:00",
+        "99:59",
+        true,
+        48000
+      ]
+    },
+    {
+      "id": 6009,
+      "type": "LTXMotionStoryboardPairSelector",
+      "pos": [
+        -3530,
+        4470
+      ],
+      "size": [
+        420,
+        332
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "link": 13569
+        },
+        {
+          "name": "image_1",
+          "type": "IMAGE",
+          "link": 13570
+        },
+        {
+          "name": "image_2",
+          "shape": 7,
+          "type": "IMAGE",
+          "link": 13571
+        },
+        {
+          "name": "image_3",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "audio",
+          "type": "AUDIO",
+          "links": [
+            13574
+          ]
+        },
+        {
+          "name": "start_image",
+          "type": "IMAGE",
+          "links": [
+            13572
+          ]
+        },
+        {
+          "name": "end_image",
+          "type": "IMAGE",
+          "links": [
+            13573
+          ]
+        },
+        {
+          "name": "current_segment",
+          "type": "INT",
+          "links": [
+            13575
+          ]
+        },
+        {
+          "name": "total_segments",
+          "type": "INT",
+          "links": [
+            13576
+          ]
+        },
+        {
+          "name": "segment_duration_seconds",
+          "type": "FLOAT",
+          "links": [
+            13577
+          ]
+        },
+        {
+          "name": "debug_text",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "title": "Storyboard First/Last Scheduler",
+      "properties": {
+        "aux_id": "LTX2-3-motion/workflows",
+        "ver": "0.1.0",
+        "Node name for S&R": "LTXMotionStoryboardPairSelector",
+        "cnr_id": "LTX2-3-motion"
+      },
+      "widgets_values": [
+        2,
+        "",
+        "",
+        "",
+        5,
+        5,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        0,
+        "",
+        "Loop mode is enabled by default in this workflow. With two connected images it renders 1->2, then 2->1, then repeats until the selected song/time ends."
+      ]
+    },
+    {
+      "id": 6010,
+      "type": "ComfyMathExpression",
+      "pos": [
+        -2700,
+        3730
+      ],
+      "size": [
+        400,
+        148
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "label": "a",
+          "name": "values.a",
+          "type": "FLOAT,INT",
+          "link": 13577
+        },
+        {
+          "label": "b",
+          "name": "values.b",
+          "shape": 7,
+          "type": "FLOAT,INT",
+          "link": 13505
+        },
+        {
+          "label": "c",
+          "name": "values.c",
+          "shape": 7,
+          "type": "FLOAT,INT",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "FLOAT",
+          "type": "FLOAT",
+          "links": []
+        },
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            13578,
+            13579,
+            13580
+          ]
+        }
+      ],
+      "title": "Segment Frame Count",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.16.3",
+        "Node name for S&R": "ComfyMathExpression",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        "ceil((a * b - 1) / 8) * 8 + 1"
+      ]
+    },
+    {
+      "id": 6011,
+      "type": "LTXMotionAudioSegmentLoop",
+      "pos": [
+        520,
+        3310
+      ],
+      "size": [
+        360,
+        218
+      ],
+      "flags": {},
+      "order": 46,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "video",
+          "type": "VIDEO",
+          "link": 13581
+        },
+        {
+          "name": "current_segment",
+          "type": "INT",
+          "link": 13575
+        },
+        {
+          "name": "total_segments",
+          "type": "INT",
+          "link": 13576
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "aux_id": "LTX2-3-motion/workflows",
+        "ver": "0.1.0",
+        "Node name for S&R": "LTXMotionAudioSegmentLoop",
+        "cnr_id": "LTX2-3-motion",
+        "enableTabs": false,
+        "tabWidth": 65,
+        "tabXOffset": 10,
+        "hasSecondTab": false,
+        "secondTabText": "Send Back",
+        "secondTabOffset": 80,
+        "secondTabWidth": 65
+      },
+      "widgets_values": [
+        true,
+        "video/gap_ltx23_first_last_motion_track_looper",
+        true,
+        true,
+        "",
+        ""
+      ]
+    },
+    {
+      "id": 6012,
+      "type": "Note",
+      "pos": [
+        -4900,
+        4480
+      ],
+      "size": [
+        820,
+        240
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Motion Track Looper Notes",
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.75",
+        "Node name for S&R": "Note"
+      },
+      "widgets_values": [
+        "This is the safe loop-enabled copy of the first/last motion-track workflow. Load First Frame and Last Frame, then use Song Range Selector to choose the full render window. If use_loaded_audio is ON, the selected song range is attached to each rendered segment and the workflow loops until the window ends. If use_loaded_audio is OFF, the same scheduler runs against silent audio so it still loops by time only."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
     }
   ],
   "links": [
@@ -2275,14 +2655,6 @@
       4849,
       0,
       "IMAGE"
-    ],
-    [
-      13112,
-      4849,
-      0,
-      4852,
-      0,
-      "VIDEO"
     ],
     [
       13217,
@@ -2379,14 +2751,6 @@
       4851,
       0,
       "LATENT"
-    ],
-    [
-      13454,
-      2004,
-      0,
-      5018,
-      0,
-      "IMAGE"
     ],
     [
       13455,
@@ -2677,30 +3041,6 @@
       "LATENT"
     ],
     [
-      13556,
-      5044,
-      0,
-      5040,
-      1,
-      "INT"
-    ],
-    [
-      13557,
-      5044,
-      0,
-      3059,
-      2,
-      "INT"
-    ],
-    [
-      13558,
-      5044,
-      0,
-      3980,
-      1,
-      "INT"
-    ],
-    [
       13559,
       3940,
       2,
@@ -2730,14 +3070,6 @@
       0,
       5012,
       4,
-      "IMAGE"
-    ],
-    [
-      13563,
-      5057,
-      0,
-      6005,
-      0,
       "IMAGE"
     ],
     [
@@ -2771,6 +3103,118 @@
       5058,
       4,
       "IMAGE"
+    ],
+    [
+      13568,
+      6007,
+      0,
+      6008,
+      0,
+      "AUDIO"
+    ],
+    [
+      13569,
+      6008,
+      0,
+      6009,
+      0,
+      "AUDIO"
+    ],
+    [
+      13570,
+      2004,
+      0,
+      6009,
+      1,
+      "IMAGE"
+    ],
+    [
+      13571,
+      5057,
+      0,
+      6009,
+      2,
+      "IMAGE"
+    ],
+    [
+      13572,
+      6009,
+      1,
+      5018,
+      0,
+      "IMAGE"
+    ],
+    [
+      13573,
+      6009,
+      2,
+      6005,
+      0,
+      "IMAGE"
+    ],
+    [
+      13574,
+      6009,
+      0,
+      4849,
+      1,
+      "AUDIO"
+    ],
+    [
+      13575,
+      6009,
+      3,
+      6011,
+      1,
+      "INT"
+    ],
+    [
+      13576,
+      6009,
+      4,
+      6011,
+      2,
+      "INT"
+    ],
+    [
+      13577,
+      6009,
+      5,
+      6010,
+      0,
+      "FLOAT"
+    ],
+    [
+      13578,
+      6010,
+      1,
+      5040,
+      1,
+      "INT"
+    ],
+    [
+      13579,
+      6010,
+      1,
+      3059,
+      2,
+      "INT"
+    ],
+    [
+      13580,
+      6010,
+      1,
+      3980,
+      1,
+      "INT"
+    ],
+    [
+      13581,
+      4849,
+      0,
+      6011,
+      0,
+      "VIDEO"
     ]
   ],
   "groups": [

@@ -4,7 +4,7 @@
 
 Place this repository inside:
 
-`ComfyUI/custom_nodes/LTX-2-3-LipSync`
+`ComfyUI/custom_nodes/LTX2-3-motion`
 
 Restart ComfyUI after copying or cloning the folder.
 
@@ -12,7 +12,7 @@ Restart ComfyUI after copying or cloning the folder.
 
 Make sure these files are available in your ComfyUI `models` folders:
 
-- `models/checkpoints/ltx-2.3-22b-dev.safetensors`
+- `models/checkpoints/ltx-2.3-22b-distilled-fp8.safetensors`
 - `models/loras/ltx-2.3-22b-distilled-lora-384.safetensors`
 - `models/loras/ltx-2.3-22b-ic-lora-motion-track-control-ref0.5.safetensors`
 - `models/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors`
@@ -27,7 +27,7 @@ If you prefer, run `install_ltx23_motion_models.bat` to place the files automati
 
 ## First Run Checklist
 
-1. Open `geekatplay_studio_ltx_2_3_ia2v_audio_range_lipsync_reimport.json`.
+1. Open `gap_ltx23_lipsync_range_stop.json`.
 2. Load a source image.
 3. Load a short audio clip or select a short range from a longer clip.
 4. Confirm the Gemma text encoder loads correctly.
@@ -36,8 +36,9 @@ If you prefer, run `install_ltx23_motion_models.bat` to place the files automati
 After that:
 
 1. Move to a segmented audio workflow for long audio.
-2. Move to a storyboard or waveform workflow if you want image rotation.
-3. Move to a per-image prompt workflow only when prompt changes between segments are needed.
+2. Move to a storyboard workflow if you want image rotation or first/last pair animation.
+3. Move to `gap_ltx23_first_last_motion_track_looper.json` when you want sparse motion guidance plus looping.
+4. Move to `gap_ltx23_flf2v_storyboard_first_last_looper.json` when you want the cleaner FLF2V render path with storyboard prompting.
 
 ## Common Setup Mistakes
 
@@ -45,6 +46,8 @@ After that:
 - Missing Gemma text encoder file
 - Using a long full-song workflow before validating a short test render
 - Using per-image prompts without connecting the prompt selector to the segment index path
+- Forgetting to switch `use_loaded_audio` off when you want a silent time-only render window
+- Leaving workflow image slots blank instead of selecting your own files from the ComfyUI input folder
 
 ## Expected Log Message
 
