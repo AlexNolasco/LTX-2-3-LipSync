@@ -72,7 +72,6 @@ Reference and base workflows:
 - `workflows/gap_ltx23_lipsync_long_audio_storyboard.json`: long-audio lip-sync that rotates through storyboard images
 - `workflows/gap_ltx23_first_last_base.json`: original FLF2V first/last base graph
 - `workflows/gap_ltx23_first_last_only_simple.json`: simple first/last-only guide setup
-- `workflows/gap_ltx23_first_last_only_motion_track.json`: motion-track plus first/last-only guide setup
 - `workflows/gap_ltx23_first_last_motion_track_looper.json`: loop-enabled motion-track workflow that alternates storyboard image pairs across long ranges
 
 Loop and storyboard workflows:
@@ -122,7 +121,7 @@ Most loop-capable workflows use the same control pattern.
 | Storyboard first/last on a selected range | `gap_ltx23_storyboard_first_last_lipsync_range_stop.json` | You want overlapping first/last storyboard pairs, but only for a chosen `start_time` to `end_time` window |
 | Motion-track loop rendering | `gap_ltx23_first_last_motion_track_looper.json` | You want sparse motion paths plus looping first/last image alternation over a long audio or silent window |
 | Cleaner FLF2V storyboard first/last loop | `gap_ltx23_flf2v_storyboard_first_last_looper.json` | You want the cleaner `video_ltx2_3_flf2v.json` render path plus storyboard first/last looping |
-| Build silent first/last shots | `gap_ltx23_first_last_only_simple.json` or `gap_ltx23_first_last_only_motion_track.json` | You are shaping motion without the segmented audio loop |
+| Build silent first/last shots | `gap_ltx23_first_last_only_simple.json` | You are shaping motion without the segmented audio loop |
 
 ## Recommended Starting Points
 

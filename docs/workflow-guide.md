@@ -167,8 +167,10 @@ What to change:
 Files:
 - `workflows/gap_ltx23_first_last_base.json`
 - `workflows/gap_ltx23_first_last_only_simple.json`
-- `workflows/gap_ltx23_first_last_only_motion_track.json`
 - `workflows/video_ltx2_3_flf2v.json`
+
+Archived reference only:
+- `archive/workflows/gap_ltx23_first_last_only_motion_track.json`
 
 Use them when:
 - You want a clean reference before adding loop automation.

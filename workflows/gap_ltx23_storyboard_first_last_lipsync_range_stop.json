@@ -2073,14 +2073,6 @@
         "Node name for S&R": "CLIPTextEncode",
         "enableTabs": false,
         "tabWidth": 65,
-        [
-          269,
-          139,
-          0,
-          128,
-          1,
-          "STRING"
-        ],
         "tabXOffset": 10,
         "hasSecondTab": false,
         "secondTabText": "Send Back",
@@ -2934,6 +2926,14 @@
       139,
       0,
       "INT"
+    ],
+    [
+      269,
+      139,
+      0,
+      147,
+      1,
+      "STRING"
     ],
     [
       275,
