@@ -2,7 +2,7 @@
   "id": "394ed254-7306-42a2-9ae6-aa880ce4456d",
   "revision": 0,
   "last_node_id": 6003,
-  "last_link_id": 310,
+  "last_link_id": 311,
   "nodes": [
     {
       "id": 98,
@@ -440,7 +440,6 @@
           "name": "LATENT",
           "type": "LATENT",
           "links": [
-            239,
             309
           ]
         }
@@ -508,7 +507,6 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            236,
             306
           ]
         },
@@ -516,7 +514,6 @@
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
-            237,
             307
           ]
         }
@@ -1281,7 +1278,7 @@
           "type": "IMAGE",
           "links": [
             224,
-            295
+            311
           ]
         }
       ],
@@ -1474,7 +1471,6 @@
           "links": [
             212,
             227,
-            238,
             292,
             308
           ]
@@ -1729,7 +1725,7 @@
         }
       },
       "widgets_values": [
-        "\n## LTX-2 Prompting Tips\n\n1. **Core Actions**: Describe events and actions as they occur over time  \n2. **Visual Details**: Describe all visual details you want to appear in the video  \n3. **Audio**: Describe sounds and dialogue needed for the scene\n\n## Report LTX-2 Issues\nTo report any issues when running this workflow, [go to GitHub](https://github.com/Lightricks/ComfyUI-LTXVideo/issues)\n\n\n## Model Links (for Local Users)\n\n**checkpoints**\n\n- [ltx-2.3-22b-distilled-fp8.safetensors](https://huggingface.co/Lightricks/LTX-2.3-fp8/resolve/main/ltx-2.3-22b-distilled-fp8.safetensors)\n\n**text_encoders**\n\n- [gemma_3_12B_it_fp4_mixed.safetensors](https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors)\n\n\n## Model Storage Location\n\n```\n📂 ComfyUI/\n├── 📂 models/\n│   ├── 📂 checkpoints/\n│   │   └── ltx-2.3-22b-distilled-fp8.safetensors\n│   └── 📂 text_encoders/\n│       └── gemma_3_12B_it_fp4_mixed.safetensors\n```\n\n## Report Issue\n\nNote: Please update ComfyUI first ([guide](https://docs.comfy.org/installation/update_comfyui)) and prepare required models. Desktop/Cloud updates follow stable releases, so some nightly-supported models may not be available yet.\n\n- Cannot run / runtime errors: [ComfyUI/issues](https://github.com/comfyanonymous/ComfyUI/issues)\n- UI / frontend issues: [ComfyUI_frontend/issues](https://github.com/Comfy-Org/ComfyUI_frontend/issues)\n- Workflow issues: [workflow_templates/issues](https://github.com/Comfy-Org/workflow_templates/issues)\n"
+        "\n## LTX-2 Prompting Tips\n\n1. **Core Actions**: Describe events and actions as they occur over time  \n2. **Visual Details**: Describe all visual details you want to appear in the video  \n3. **Audio**: Describe sounds and dialogue needed for the scene\n\n## Report LTX-2 Issues\nTo report any issues when running this workflow, [go to GitHub](https://github.com/Lightricks/ComfyUI-LTXVideo/issues)\n\n\n## Model Links (for Local Users)\n\n**checkpoints**\n\n- [ltx-2.3-22b-distilled-fp8.safetensors](https://huggingface.co/Lightricks/LTX-2.3-fp8/resolve/main/ltx-2.3-22b-distilled-fp8.safetensors)\n\n**text_encoders**\n\n- [gemma_3_12B_it_fp4_mixed.safetensors](https://huggingface.co/Comfy-Org/ltx-2/resolve/main/split_files/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors)\n\n\n## Model Storage Location\n\n```\n\ud83d\udcc2 ComfyUI/\n\u251c\u2500\u2500 \ud83d\udcc2 models/\n\u2502   \u251c\u2500\u2500 \ud83d\udcc2 checkpoints/\n\u2502   \u2502   \u2514\u2500\u2500 ltx-2.3-22b-distilled-fp8.safetensors\n\u2502   \u2514\u2500\u2500 \ud83d\udcc2 text_encoders/\n\u2502       \u2514\u2500\u2500 gemma_3_12B_it_fp4_mixed.safetensors\n```\n\n## Report Issue\n\nNote: Please update ComfyUI first ([guide](https://docs.comfy.org/installation/update_comfyui)) and prepare required models. Desktop/Cloud updates follow stable releases, so some nightly-supported models may not be available yet.\n\n- Cannot run / runtime errors: [ComfyUI/issues](https://github.com/comfyanonymous/ComfyUI/issues)\n- UI / frontend issues: [ComfyUI_frontend/issues](https://github.com/Comfy-Org/ComfyUI_frontend/issues)\n- Workflow issues: [workflow_templates/issues](https://github.com/Comfy-Org/workflow_templates/issues)\n"
       ],
       "color": "#222",
       "bgcolor": "#000"
@@ -2202,7 +2198,7 @@
         {
           "name": "MASK",
           "type": "MASK",
-          "links": null
+          "links": []
         }
       ],
       "title": "Image 1",
@@ -2256,7 +2252,7 @@
         {
           "name": "MASK",
           "type": "MASK",
-          "links": null
+          "links": []
         }
       ],
       "title": "Image 2",
@@ -2538,7 +2534,7 @@
         {
           "name": "input",
           "type": "IMAGE,MASK",
-          "link": 295
+          "link": 311
         }
       ],
       "outputs": [
@@ -2601,7 +2597,7 @@
         {
           "name": "batch_size",
           "type": "INT",
-          "links": null
+          "links": []
         }
       ],
       "properties": {
@@ -3082,40 +3078,8 @@
       "INT"
     ],
     [
-      236,
-      109,
-      0,
-      115,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      237,
-      109,
-      1,
-      115,
-      1,
-      "CONDITIONING"
-    ],
-    [
-      238,
-      127,
-      2,
-      115,
-      2,
-      "VAE"
-    ],
-    [
-      239,
-      108,
-      0,
-      115,
-      3,
-      "LATENT"
-    ],
-    [
       241,
-      127,
+      148,
       0,
       116,
       0,
@@ -3123,7 +3087,7 @@
     ],
     [
       242,
-      111,
+      149,
       0,
       116,
       1,
@@ -3131,7 +3095,7 @@
     ],
     [
       243,
-      111,
+      149,
       1,
       116,
       2,
@@ -3139,7 +3103,7 @@
     ],
     [
       244,
-      111,
+      149,
       2,
       119,
       0,
@@ -3242,6 +3206,14 @@
       "INT"
     ],
     [
+      269,
+      139,
+      0,
+      147,
+      1,
+      "STRING"
+    ],
+    [
       275,
       138,
       0,
@@ -3322,14 +3294,6 @@
       "CLIP"
     ],
     [
-      269,
-      139,
-      0,
-      147,
-      1,
-      "STRING"
-    ],
-    [
       286,
       147,
       0,
@@ -3400,14 +3364,6 @@
       138,
       0,
       "AUDIO"
-    ],
-    [
-      295,
-      124,
-      0,
-      5049,
-      0,
-      "IMAGE"
     ],
     [
       296,
@@ -3528,6 +3484,14 @@
       5012,
       5,
       "FLOAT"
+    ],
+    [
+      311,
+      124,
+      0,
+      5049,
+      0,
+      "IMAGE"
     ]
   ],
   "groups": [

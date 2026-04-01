@@ -7,3 +7,6 @@ __pycache__/
 *.log
 *.tmp
 *.partial.*
+archive/
+workflows-new/
+LTX-2-3-Lipsync.zip

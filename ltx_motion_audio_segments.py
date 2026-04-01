@@ -1,4 +1,5 @@
 import copy
+import gc
 import glob
 import json
 import logging
@@ -876,6 +877,48 @@ def _summarize_video_frames(video):
         )
     except Exception as exc:
         return f"video diagnostics failed: {exc}"
+
+
+def _summarize_cuda_memory():
+    if not hasattr(torch, "cuda") or not torch.cuda.is_available():
+        return "cuda=unavailable"
+
+    try:
+        if not torch.cuda.is_initialized():
+            return "cuda=available_not_initialized"
+
+        allocated = torch.cuda.memory_allocated()
+        reserved = torch.cuda.memory_reserved()
+        max_allocated = torch.cuda.max_memory_allocated()
+        max_reserved = torch.cuda.max_memory_reserved()
+        return (
+            f"cuda_allocated={allocated} | cuda_reserved={reserved} | "
+            f"cuda_max_allocated={max_allocated} | cuda_max_reserved={max_reserved}"
+        )
+    except Exception as exc:
+        return f"cuda_summary_failed={exc}"
+
+
+def _cleanup_after_segment(stage_label):
+    gc_collected = gc.collect()
+    memory_summary = _summarize_cuda_memory()
+
+    if hasattr(torch, "cuda") and torch.cuda.is_available():
+        try:
+            if torch.cuda.is_initialized():
+                torch.cuda.empty_cache()
+                if hasattr(torch.cuda, "ipc_collect"):
+                    torch.cuda.ipc_collect()
+                memory_summary = _summarize_cuda_memory()
+        except Exception as exc:
+            logging.warning("[LTX Motion] %s cleanup could not fully clear CUDA cache: %s", stage_label, exc)
+
+    logging.info(
+        "[LTX Motion] %s cleanup complete | gc_collected=%s | %s",
+        stage_label,
+        gc_collected,
+        memory_summary,
+    )
 
 
 def _summarize_tensor(tensor):
@@ -2379,11 +2422,18 @@ class LTXMotionAudioSegmentLoop:
         video.save_to(segment_path, format=Types.VideoContainer("auto"), codec="auto", metadata=metadata)
         logging.info("[LTX Motion] Saved segment %s/%s to %s", current_segment + 1, total_segments, segment_path)
 
+        # Drop segment-local data before either merging or requeueing the next pass.
+        video = None
+        metadata = None
+        frame_summary = None
+
         if not enabled:
+            _cleanup_after_segment(f"segment {current_segment + 1}/{total_segments} disabled-loop")
             return {"ui": {"text": [f"Saved segment {current_segment + 1}/{total_segments}: {segment_name}"]}}
 
         next_segment = current_segment + 1
         if next_segment >= total_segments:
+            _cleanup_after_segment(f"segment {current_segment + 1}/{total_segments} final")
             ui_text = [f"Saved segment {current_segment + 1}/{total_segments}: {segment_name}"]
 
             if merge_segments:
@@ -2433,6 +2483,11 @@ class LTXMotionAudioSegmentLoop:
             raise ValueError("LTXMotionAudioSegmentLoop could not find a compatible segment loader node in the prompt.")
         if not loop_updated:
             raise ValueError("LTXMotionAudioSegmentLoop could not update its render_id in the prompt.")
+
+        effective_prompt = None
+        effective_extra_pnginfo = None
+        base_prompt = None
+        _cleanup_after_segment(f"segment {current_segment + 1}/{total_segments} requeue")
 
         logging.info("[LTX Motion] Requeueing segment %s/%s", next_segment + 1, total_segments)
         _enqueue_prompt(prompt_copy)

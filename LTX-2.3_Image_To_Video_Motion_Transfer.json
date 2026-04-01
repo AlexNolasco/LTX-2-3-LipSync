@@ -2,7 +2,7 @@
   "id": "394ed254-7306-42a2-9ae6-aa880ce4456d",
   "revision": 0,
   "last_node_id": 5058,
-  "last_link_id": 13543,
+  "last_link_id": 13544,
   "nodes": [
     {
       "id": 4848,
@@ -655,10 +655,10 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "links": null
+          "links": []
         }
       ],
-      "title": "🅛🅣🅧 Gemma API Text Encode - POSITIVE",
+      "title": "\ud83c\udd5b\ud83c\udd63\ud83c\udd67 Gemma API Text Encode - POSITIVE",
       "properties": {
         "cnr_id": "ComfyUI-LTXVideo",
         "ver": "531512f7286963dc7aff1fd8bf5556e95eae03af",
@@ -922,10 +922,10 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "links": null
+          "links": []
         }
       ],
-      "title": "🅛🅣🅧 Gemma API Text Encode - NEGATIVE",
+      "title": "\ud83c\udd5b\ud83c\udd63\ud83c\udd67 Gemma API Text Encode - NEGATIVE",
       "properties": {
         "cnr_id": "ComfyUI-LTXVideo",
         "ver": "531512f7286963dc7aff1fd8bf5556e95eae03af",
@@ -1154,7 +1154,7 @@
         {
           "name": "batch_size",
           "type": "INT",
-          "links": null
+          "links": []
         }
       ],
       "properties": {
@@ -1242,7 +1242,7 @@
         "Node name for S&R": "LoadImage"
       },
       "widgets_values": [
-          "",
+        "",
         "image"
       ]
     },

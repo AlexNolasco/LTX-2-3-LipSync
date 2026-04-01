@@ -733,10 +733,10 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "links": null
+          "links": []
         }
       ],
-      "title": "🅛🅣🅧 Gemma API Text Encode - POSITIVE",
+      "title": "\ud83c\udd5b\ud83c\udd63\ud83c\udd67 Gemma API Text Encode - POSITIVE",
       "properties": {
         "cnr_id": "ComfyUI-LTXVideo",
         "ver": "531512f7286963dc7aff1fd8bf5556e95eae03af",
@@ -1167,7 +1167,7 @@
         {
           "name": "batch_size",
           "type": "INT",
-          "links": null
+          "links": []
         }
       ],
       "properties": {
@@ -1281,10 +1281,10 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "links": null
+          "links": []
         }
       ],
-      "title": "🅛🅣🅧 Gemma API Text Encode - NEGATIVE",
+      "title": "\ud83c\udd5b\ud83c\udd63\ud83c\udd67 Gemma API Text Encode - NEGATIVE",
       "properties": {
         "cnr_id": "ComfyUI-LTXVideo",
         "ver": "531512f7286963dc7aff1fd8bf5556e95eae03af",
@@ -1815,7 +1815,7 @@
         {
           "name": "batch_size",
           "type": "INT",
-          "links": null
+          "links": []
         }
       ],
       "properties": {
@@ -1870,7 +1870,7 @@
         {
           "name": "FLOAT",
           "type": "FLOAT",
-          "links": null
+          "links": []
         }
       ],
       "properties": {
@@ -2565,14 +2565,6 @@
       "FLOAT"
     ],
     [
-      13542,
-      2004,
-      0,
-      5012,
-      4,
-      "IMAGE"
-    ],
-    [
       13543,
       5012,
       0,
@@ -2613,30 +2605,6 @@
       "FLOAT"
     ],
     [
-      13548,
-      5057,
-      0,
-      5058,
-      4,
-      "IMAGE"
-    ],
-    [
-      13554,
-      2004,
-      0,
-      6001,
-      0,
-      "IMAGE"
-    ],
-    [
-      13555,
-      5057,
-      0,
-      6002,
-      0,
-      "IMAGE"
-    ],
-    [
       13549,
       5058,
       0,
@@ -2675,6 +2643,22 @@
       4528,
       0,
       "LATENT"
+    ],
+    [
+      13554,
+      2004,
+      0,
+      6001,
+      0,
+      "IMAGE"
+    ],
+    [
+      13555,
+      5057,
+      0,
+      6002,
+      0,
+      "IMAGE"
     ],
     [
       13556,

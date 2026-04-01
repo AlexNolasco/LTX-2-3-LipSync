@@ -693,10 +693,10 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "links": null
+          "links": []
         }
       ],
-      "title": "🅛🅣🅧 Gemma API Text Encode - POSITIVE",
+      "title": "\ud83c\udd5b\ud83c\udd63\ud83c\udd67 Gemma API Text Encode - POSITIVE",
       "properties": {
         "cnr_id": "ComfyUI-LTXVideo",
         "ver": "531512f7286963dc7aff1fd8bf5556e95eae03af",
@@ -1112,10 +1112,10 @@
         {
           "name": "conditioning",
           "type": "CONDITIONING",
-          "links": null
+          "links": []
         }
       ],
-      "title": "🅛🅣🅧 Gemma API Text Encode - NEGATIVE",
+      "title": "\ud83c\udd5b\ud83c\udd63\ud83c\udd67 Gemma API Text Encode - NEGATIVE",
       "properties": {
         "cnr_id": "ComfyUI-LTXVideo",
         "ver": "531512f7286963dc7aff1fd8bf5556e95eae03af",
@@ -1709,7 +1709,7 @@
         {
           "name": "batch_size",
           "type": "INT",
-          "links": null
+          "links": []
         }
       ],
       "properties": {
@@ -2112,6 +2112,22 @@
       "IMAGE"
     ],
     [
+      13516,
+      5050,
+      0,
+      3059,
+      0,
+      "INT"
+    ],
+    [
+      13517,
+      5050,
+      1,
+      3059,
+      1,
+      "INT"
+    ],
+    [
       13536,
       5018,
       0,
@@ -2168,22 +2184,6 @@
       "FLOAT"
     ],
     [
-      13554,
-      2004,
-      0,
-      6001,
-      0,
-      "IMAGE"
-    ],
-    [
-      13555,
-      5057,
-      0,
-      6002,
-      0,
-      "IMAGE"
-    ],
-    [
       13549,
       5058,
       0,
@@ -2224,6 +2224,22 @@
       "LATENT"
     ],
     [
+      13554,
+      2004,
+      0,
+      6001,
+      0,
+      "IMAGE"
+    ],
+    [
+      13555,
+      5057,
+      0,
+      6002,
+      0,
+      "IMAGE"
+    ],
+    [
       13557,
       5044,
       0,
@@ -2262,22 +2278,6 @@
       4851,
       1,
       "VAE"
-    ],
-    [
-      13516,
-      5050,
-      0,
-      3059,
-      0,
-      "INT"
-    ],
-    [
-      13517,
-      5050,
-      1,
-      3059,
-      1,
-      "INT"
     ],
     [
       13562,
