@@ -2,9 +2,12 @@
 
 ## Install Location
 
-Place this repository inside:
+Place this repository inside your `ComfyUI/custom_nodes` folder. For example:
 
-`ComfyUI/custom_nodes/LTX2-3-motion`
+```bash
+cd ComfyUI/custom_nodes
+git clone https://github.com/GeekatplayStudio/LTX-2-3-LipSync LTX2-3-motion
+```
 
 Restart ComfyUI after copying or cloning the folder.
 
