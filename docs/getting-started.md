@@ -17,7 +17,7 @@ Make sure these files are available in your ComfyUI `models` folders:
 - `models/loras/ltx-2.3-22b-ic-lora-motion-track-control-ref0.5.safetensors`
 - `models/text_encoders/gemma_3_12B_it_fp4_mixed.safetensors`
 
-If you prefer, run `install_ltx23_motion_models.bat` to place the files automatically.
+If you prefer, run `install_ltx23_motion_models.bat` (or `./install_ltx23_motion_models.sh` on Linux) to place the files automatically.
 
 ## System Requirements
 
