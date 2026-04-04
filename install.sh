@@ -87,7 +87,7 @@ if ! "${PYTHON_EXE}" -m pip --version >/dev/null 2>&1; then
 fi
 
 "${PYTHON_EXE}" -m pip install --upgrade pip
-"${PYTHON_EXE}" -m pip install --upgrade numpy pillow aiohttp imageio-ffmpeg
+"${PYTHON_EXE}" -m pip install --upgrade "numpy<2.3.0" pillow aiohttp imageio-ffmpeg
 
 ensure_ffmpeg() {
   echo ""

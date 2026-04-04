@@ -95,8 +95,12 @@ else
   }
 
   check_model "checkpoints/ltx-2.3-22b-dev.safetensors" "Checkpoint (ltx-2.3-22b-dev)"
+  check_model "checkpoints/ltx-2.3-22b-dev-fp8.safetensors" "Checkpoint (ltx-2.3-22b-dev-fp8)"
+  check_model "checkpoints/ltx-2.3-22b-distilled-fp8.safetensors" "Checkpoint (ltx-2.3-22b-distilled-fp8)"
   check_model "loras/ltx-2.3-22b-distilled-lora-384.safetensors" "Distilled LoRA"
   check_model "loras/ltx-2.3-22b-ic-lora-motion-track-control-ref0.5.safetensors" "Motion Track IC-LoRA"
+  check_model "loras/gemma-3-12b-it-abliterated_lora_rank64_bf16.safetensors" "Gemma Abliterated LoRA"
+  check_model "upscale_models/ltx-2.3-spatial-upscaler-x2-1.0.safetensors" "Spatial Upscaler"
   check_model "text_encoders/gemma_3_12B_it_fp4_mixed.safetensors" "Gemma text encoder"
   check_model "text_encoders/comfy_gemma_3_12B_it.safetensors" "Gemma comfy alias"
   check_model "text_encoders/gemma_3_12B_it.safetensors" "Gemma legacy alias"
